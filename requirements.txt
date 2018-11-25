@@ -1,0 +1,4 @@
+keyper==0.3
+mypy==0.641
+pylint==2.1.1
+requests==2.20.1
