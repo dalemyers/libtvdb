@@ -71,10 +71,12 @@ class TVDBClient:
         return headers
     #pylint: enable=no-self-use
 
-    def _authenticate(self) -> bool:
+    def authenticate(self) -> bool:
         """Authenticate the client with the API.
 
-        This will exit early if we are already authenticated.
+        This will exit early if we are already authenticated. It does not need
+        to be called. All calls requiring that the client is authenticated will
+        call this.
         """
 
         if self.auth_token is not None:
