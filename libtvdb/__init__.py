@@ -1,32 +1,16 @@
 """libtvdb is a wrapper around the TVDB API (https://api.thetvdb.com/swagger).
 """
 
-from typing import Any, Dict, ClassVar, Optional
+import json
+from typing import Any, ClassVar, Dict, List, Optional
+import urllib.parse
 
+import keyper
 import requests
 
-class Log:
-    """Fake log class that will be used until we implement logging."""
-
-    @staticmethod
-    def info(message):
-        """Log an info level log message."""
-        print("INFO: " + message)
-
-    @staticmethod
-    def debug(message):
-        """Log a debug level log message."""
-        print("DEBUG: " + message)
-
-    @staticmethod
-    def warning(message):
-        """Log a warning level log message."""
-        print("WARNING: " + message)
-
-    @staticmethod
-    def error(message):
-        """Log an error level log message."""
-        print("ERROR: " + message)
+from libtvdb.exceptions import TVDBException, ShowNotFoundException
+from libtvdb import types
+from libtvdb.utilities import Log
 
 
 class TVDBClient:
@@ -42,7 +26,31 @@ class TVDBClient:
 
     _BASE_API: ClassVar[str] = "https://api.thetvdb.com"
 
-    def __init__(self, *, api_key: str, user_key: str, user_name: str) -> None:
+    def __init__(self, *, api_key: Optional[str] = None, user_key: Optional[str] = None, user_name: Optional[str] = None) -> None:
+        """Create a new client wrapper.
+
+        If any of the supplied parameters are None, they will be loaded from the
+        keychain if possible. If not possible, an exception will be thrown.
+        """
+
+        if api_key is None:
+            api_key = keyper.get_password(label="libtvdb_api_key")
+
+        if api_key is None:
+            raise Exception("No API key was supplied or could be found in the keychain")
+
+        if user_key is None:
+            user_key = keyper.get_password(label="libtvdb_user_key")
+
+        if user_key is None:
+            raise Exception("No user key was supplied or could be found in the keychain")
+
+        if user_name is None:
+            user_name = keyper.get_password(label="libtvdb_user_name")
+
+        if user_name is None:
+            raise Exception("No user name was supplied or could be found in the keychain")
+
         self.api_key = api_key
         self.user_key = user_key
         self.user_name = user_name
@@ -61,6 +69,9 @@ class TVDBClient:
         headers = {
             "Accept": "application/json"
         }
+
+        if self.auth_token is not None:
+            headers["Authorization"] = f"Bearer {self.auth_token}"
 
         if additional_headers is None:
             return headers
@@ -128,3 +139,58 @@ class TVDBClient:
         Log.info("Authenticated successfully")
 
         return True
+
+    def search_show(self, show_name: str) -> List[types.Show]:
+        """Search for shows matching the name supplied.
+
+        If no matching show is found, a ShowNotFoundException will be thrown.
+        """
+
+        if show_name is None or show_name == "":
+            return []
+
+        self.authenticate()
+
+        Log.info(f"Searching for show: {show_name}")
+
+        encoded_name = urllib.parse.quote(show_name)
+
+        response = requests.get(
+            self._expand_url(f"search/series?name={encoded_name}"),
+            headers=self._construct_headers()
+        )
+
+        if response.status_code < 200 or response.status_code >= 300:
+            # Try and read the JSON. If we don't have it, we return the generic
+            # exception type
+            try:
+                data = response.json()
+            except json.JSONDecodeError:
+                raise TVDBException(f"Could not find show: {response.text}")
+
+            # Try and get the error message so we can use it
+            error = data.get('Error')
+
+            # If we don't have it, just return the generic exception type
+            if error is None:
+                raise TVDBException(f"Could not find show: {response.text}")
+
+            if error == "Resource not found":
+                raise ShowNotFoundException(f"Could not find show: {show_name}")
+            else:
+                raise TVDBException(f"Could not find show: {response.text}")
+
+        content = response.json()
+
+        shows_data = content.get('data')
+
+        if shows_data is None:
+            raise ShowNotFoundException(f"Could not find show: {show_name}")
+
+        shows = []
+
+        for show_data in shows_data:
+            show = types.Show.from_json(show_data)
+            shows.append(show)
+
+        return shows

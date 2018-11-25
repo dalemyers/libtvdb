@@ -44,7 +44,7 @@ jobs:
   - script: python -m pylint --rcfile=pylintrc libtvdb
     displayName: 'Lint'
 
-  - script: python -m mypy libtvdb/
+  - script: python -m mypy --ignore-missing-imports libtvdb/
     displayName: 'Type Check'
 
   - script: |
