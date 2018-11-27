@@ -1,0 +1,10 @@
+{
+    "files.exclude": {
+        "**/.mypy_cache": true,
+        "**/.pytest_cache": true,
+        "bin/": true,
+        "include/": true,
+        "junit/": true,
+        "lib/": true,
+    }
+}
