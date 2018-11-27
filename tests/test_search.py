@@ -1,5 +1,7 @@
 """Test searching for shows."""
 
+import datetime
+
 from tests.context import BaseTVDBTest, libtvdb
 
 
@@ -32,3 +34,23 @@ class SearchTestSuite(BaseTVDBTest):
         for show_name in SearchTestSuite.unexpected_shows:
             with self.assertRaises(libtvdb.exceptions.ShowNotFoundException):
                 _ = self.client().search_show(show_name)
+
+    def test_show_parse_result(self):
+        """Test that the show values are what we'd expect."""
+        shows = self.client().search_show("Better Off Ted")
+        self.assertGreater(len(shows), 0, "Failed to find any matching shows")
+
+        filtered_shows = [show for show in shows if show.identifier == 84021]
+        self.assertEqual(1, len(filtered_shows), "There should only be a single matching show for an ID")
+
+        show = filtered_shows[0]
+
+        self.assertEqual(show.identifier, 84021, f"'{show.identifier}'' was not equal to expected identifier '84021'")
+        self.assertEqual(show.name, "Better Off Ted", f"'{show.name}' was not equal to expected name 'Better Off Ted'")
+        self.assertEqual(show.slug, "better-off-ted", f"'{show.slug}' was not equal to expected sluh 'Better Off Ted'")
+        self.assertEqual(show.status, libtvdb.types.ShowStatus.ended, f"'{show.status}' was not equal to expected status '{libtvdb.types.ShowStatus.ended}'")
+        self.assertEqual(show.first_aired, datetime.date(2009, 3, 18), f"'{show.first_aired}' was not equal to expected first_aired '{datetime.date(2009, 3, 18)}'")
+        self.assertEqual(show.aliases, [], f"'{show.aliases}' was not equal to expected aliases '[]'")
+        self.assertEqual(show.network, "ABC (US)", f"'{show.network}' was not equal to expected network 'ABC (US)'")
+        self.assertEqual(show.overview[:30], "As the head of research and de", f"'{show.overview[:30]}' was not equal to expected overview fragment 'As the head of research and de'")
+        self.assertEqual(show.banner, "graphical/84021-g3.jpg", f"'{show.banner}' was not equal to expected banner 'graphical/84021-g3.jpg'")
