@@ -194,3 +194,46 @@ class TVDBClient:
             shows.append(show)
 
         return shows
+
+
+    def show_info(self, show_identifier: int) -> Optional[types.Show]:
+        """Get the full information for the show with the given identifier.
+        """
+
+        self.authenticate()
+
+        Log.info(f"Fetching data for show: {show_identifier}")
+
+        response = requests.get(
+            self._expand_url(f"series/{show_identifier}"),
+            headers=self._construct_headers()
+        )
+
+        if response.status_code < 200 or response.status_code >= 300:
+            # Try and read the JSON. If we don't have it, we return the generic
+            # exception type
+            try:
+                data = response.json()
+            except json.JSONDecodeError:
+                raise TVDBException(f"Could not find show: {response.text}")
+
+            # Try and get the error message so we can use it
+            error = data.get('Error')
+
+            # If we don't have it, just return the generic exception type
+            if error is None:
+                raise TVDBException(f"Could not find show: {response.text}")
+
+            if error == "Resource not found":
+                raise ShowNotFoundException(f"Could not find show with ID: {show_identifier}")
+            else:
+                raise TVDBException(f"Could not find show: {response.text}")
+
+        content = response.json()
+
+        show_data = content.get('data')
+
+        if show_data is None:
+            raise ShowNotFoundException(f"Could not find show with ID: {show_identifier}")
+
+        return types.Show.from_json(show_data)
