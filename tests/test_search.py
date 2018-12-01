@@ -35,7 +35,7 @@ class SearchTestSuite(BaseTVDBTest):
         """Test that shows we expect to not be there are not in fact there."""
 
         for show_name in SearchTestSuite.unexpected_shows:
-            with self.assertRaises(libtvdb.exceptions.ShowNotFoundException):
+            with self.assertRaises(libtvdb.exceptions.NotFoundException):
                 _ = self.client().search_show(show_name)
 
     def test_show_parse_result(self):
