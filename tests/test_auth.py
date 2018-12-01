@@ -8,4 +8,6 @@ class AuthenticationTestSuite(BaseTVDBTest):
 
     def test_authentication(self):
         """Test that authentication works as expected."""
-        self.assertTrue(self.client().authenticate(), "Failed to authenticate")
+
+        # Will throw an exception if it fails
+        self.client().authenticate()
