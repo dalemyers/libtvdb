@@ -1,17 +1,22 @@
+"""Shared context information for all tests."""
+
 import sys
 import os
+from typing import ClassVar, Optional
 import unittest
 
 import keyper
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+#pylint: disable=wrong-import-position
 import libtvdb
+#pylint: enable=wrong-import-position
 
 
 class BaseTVDBTest(unittest.TestCase):
     """Base class for TVDB test cases."""
 
-    _client = None
+    _client: ClassVar[Optional[libtvdb.TVDBClient]] = None
 
     @classmethod
     def setUpClass(cls):
@@ -45,6 +50,10 @@ class BaseTVDBTest(unittest.TestCase):
 
         return os.environ.get(secret_name.upper())
 
+    #pylint: disable=no-self-use
     def client(self) -> libtvdb.TVDBClient:
         """A class reference to the client to clean up the tests."""
+        if BaseTVDBTest._client is None:
+            raise Exception("Client was not set")
         return BaseTVDBTest._client
+    #pylint: enable=no-self-use

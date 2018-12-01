@@ -3,7 +3,6 @@
 import datetime
 
 from tests.context import BaseTVDBTest
-from tests.context import libtvdb
 
 from libtvdb.model.enums import AirDay, ShowStatus
 
@@ -30,7 +29,6 @@ class ShowTestSuite(BaseTVDBTest):
         self.assertEqual(show.name, 'Lost', f"'{show.name}' was not equal to expected name Lost'")
         self.assertEqual(show.network, 'ABC (US)', f"'{show.network}' was not equal to expected network 'ABC (US)'")
         self.assertEqual(show.network_identifier, '', f"'{show.network_identifier}' was not equal to expected network_identifier ''")
-        self.assertEqual(show.overview, 'After their plane, Oceanic Air flight 815, tore apart whilst thousands of miles off course, the survivors find themselves on a mysterious deserted island where they soon find out they are not alone.', f"'{show.overview}' was not equal to expected overview 'After their plane, Oceanic Air flight 815, tore apart whilst thousands of miles off course, the survivors find themselves on a mysterious deserted island where they soon find out they are not alone.'")
         self.assertEqual(show.rating, 'TV-14', f"'{show.rating}' was not equal to expected rating 'TV-14'")
         self.assertEqual(show.runtime, '45', f"'{show.runtime}' was not equal to expected runtime '45'")
         self.assertEqual(show.series_identifier, '24313', f"'{show.series_identifier}' was not equal to expected series_identifier '24313'")
@@ -39,3 +37,7 @@ class ShowTestSuite(BaseTVDBTest):
         self.assertEqual(show.slug, 'lost', f"'{show.slug}' was not equal to expected slug 'lost")
         self.assertEqual(show.status, ShowStatus.ended, f"'{show.status}' was not equal to expected status '{ShowStatus.ended}'")
         self.assertEqual(show.zap2it_id, 'SH672362', f"'{show.zap2it_id}' was not equal to expected zap2it_id 'SH672362'")
+
+        #pylint: disable=line-too-long
+        self.assertEqual(show.overview, 'After their plane, Oceanic Air flight 815, tore apart whilst thousands of miles off course, the survivors find themselves on a mysterious deserted island where they soon find out they are not alone.', f"'{show.overview}' was not equal to expected overview 'After their plane, Oceanic Air flight 815, tore apart whilst thousands of miles off course, the survivors find themselves on a mysterious deserted island where they soon find out they are not alone.'")
+        #pylint: enable=line-too-long
