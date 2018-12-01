@@ -2,7 +2,10 @@
 
 import datetime
 
-from tests.context import BaseTVDBTest, libtvdb
+from tests.context import BaseTVDBTest
+from tests.context import libtvdb
+
+from libtvdb.model.enums import ShowStatus
 
 
 class SearchTestSuite(BaseTVDBTest):
@@ -48,7 +51,7 @@ class SearchTestSuite(BaseTVDBTest):
         self.assertEqual(show.identifier, 84021, f"'{show.identifier}'' was not equal to expected identifier '84021'")
         self.assertEqual(show.name, "Better Off Ted", f"'{show.name}' was not equal to expected name 'Better Off Ted'")
         self.assertEqual(show.slug, "better-off-ted", f"'{show.slug}' was not equal to expected sluh 'Better Off Ted'")
-        self.assertEqual(show.status, libtvdb.types.ShowStatus.ended, f"'{show.status}' was not equal to expected status '{libtvdb.types.ShowStatus.ended}'")
+        self.assertEqual(show.status, ShowStatus.ended, f"'{show.status}' was not equal to expected status '{ShowStatus.ended}'")
         self.assertEqual(show.first_aired, datetime.date(2009, 3, 18), f"'{show.first_aired}' was not equal to expected first_aired '{datetime.date(2009, 3, 18)}'")
         self.assertEqual(show.aliases, [], f"'{show.aliases}' was not equal to expected aliases '[]'")
         self.assertEqual(show.network, "ABC (US)", f"'{show.network}' was not equal to expected network 'ABC (US)'")

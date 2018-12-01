@@ -2,7 +2,10 @@
 
 import datetime
 
-from tests.context import BaseTVDBTest, libtvdb
+from tests.context import BaseTVDBTest
+from tests.context import libtvdb
+
+from libtvdb.model.enums import AirDay, ShowStatus
 
 
 class ShowTestSuite(BaseTVDBTest):
@@ -15,7 +18,7 @@ class ShowTestSuite(BaseTVDBTest):
 
         self.assertEqual(show.added, None, f"'{show.added}' was not equal to expected added 'None'")
         self.assertEqual(show.added_by, None, f"'{show.added_by}' was not equal to expected added by 'None'")
-        self.assertEqual(show.air_day, libtvdb.types.AirDay.tuesday, f"'{show.air_day}' was not equal to expected air_day '{libtvdb.types.AirDay.tuesday}'")
+        self.assertEqual(show.air_day, AirDay.tuesday, f"'{show.air_day}' was not equal to expected air_day '{AirDay.tuesday}'")
         self.assertEqual(show.air_time, '9:00 PM', f"'{show.air_time}' was not equal to expected air time '9:00 PM'")
         self.assertEqual(show.aliases, ['Lost: Missing Pieces'], f"'{show.aliases}' was not equal to expected aliases '{['Lost: Missing Pieces']}'")
         self.assertEqual(show.banner, 'graphical/73739-g4.jpg', f"'{show.banner}' was not equal to expected banner 'graphical/73739-g4.jpg")
@@ -34,5 +37,5 @@ class ShowTestSuite(BaseTVDBTest):
         self.assertEqual(show.site_rating, 9.1, f"'{show.site_rating}' was not equal to expected site_rating '9.1'")
         self.assertEqual(show.site_rating_count, 768, f"'{show.site_rating_count}' was not equal to expected site_rating_count '768'")
         self.assertEqual(show.slug, 'lost', f"'{show.slug}' was not equal to expected slug 'lost")
-        self.assertEqual(show.status, libtvdb.types.ShowStatus.ended, f"'{show.status}' was not equal to expected status '{libtvdb.types.ShowStatus.ended}'")
+        self.assertEqual(show.status, ShowStatus.ended, f"'{show.status}' was not equal to expected status '{ShowStatus.ended}'")
         self.assertEqual(show.zap2it_id, 'SH672362', f"'{show.zap2it_id}' was not equal to expected zap2it_id 'SH672362'")

@@ -9,7 +9,7 @@ import keyper
 import requests
 
 from libtvdb.exceptions import TVDBException, ShowNotFoundException
-from libtvdb import types
+from libtvdb.model.show import Show
 from libtvdb.utilities import Log
 
 
@@ -140,7 +140,7 @@ class TVDBClient:
 
         return True
 
-    def search_show(self, show_name: str) -> List[types.Show]:
+    def search_show(self, show_name: str) -> List[Show]:
         """Search for shows matching the name supplied.
 
         If no matching show is found, a ShowNotFoundException will be thrown.
@@ -190,13 +190,13 @@ class TVDBClient:
         shows = []
 
         for show_data in shows_data:
-            show = types.Show.from_json(show_data)
+            show = Show.from_json(show_data)
             shows.append(show)
 
         return shows
 
 
-    def show_info(self, show_identifier: int) -> Optional[types.Show]:
+    def show_info(self, show_identifier: int) -> Optional[Show]:
         """Get the full information for the show with the given identifier.
         """
 
@@ -236,4 +236,4 @@ class TVDBClient:
         if show_data is None:
             raise ShowNotFoundException(f"Could not find show with ID: {show_identifier}")
 
-        return types.Show.from_json(show_data)
+        return Show.from_json(show_data)

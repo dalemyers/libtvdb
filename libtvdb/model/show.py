@@ -1,27 +1,10 @@
 """All the types that are used in the API."""
 
 import datetime
-import enum
 from typing import Any, Dict, List, Optional
 
+from libtvdb.model.enums import AirDay, ShowStatus
 from libtvdb.utilities import parse_date, parse_datetime, require, try_pop
-
-class ShowStatus(enum.Enum):
-    """Represents the status of a show."""
-    continuing = 'Continuing'
-    ended = 'Ended'
-    unknown = 'Unknown'
-
-class AirDay(enum.Enum):
-    """Represents when a show airs."""
-    monday = 'Monday'
-    tuesday = 'Tuesday'
-    wednesday = 'Wednesday'
-    thursday = 'Thursday'
-    friday = 'Friday'
-    saturday = 'Saturday'
-    sunday = 'Sunday'
-
 
 class Show:
     """Represents a single show."""
