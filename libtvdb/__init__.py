@@ -9,6 +9,7 @@ import keyper
 import requests
 
 from libtvdb.exceptions import TVDBException, NotFoundException, TVDBAuthenticationException
+from libtvdb.model.actor import Actor
 from libtvdb.model.show import Show
 from libtvdb.utilities import Log
 
@@ -211,11 +212,30 @@ class TVDBClient:
 
 
     def show_info(self, show_identifier: int, *, timeout: float = 10.0) -> Optional[Show]:
-        """Get the full information for the show with the given identifier.
-        """
+        """Get the full information for the show with the given identifier."""
 
         Log.info(f"Fetching data for show: {show_identifier}")
 
         show_data = self.get(f"series/{show_identifier}", timeout=timeout)
 
         return Show.from_json(show_data)
+
+
+    def actors_from_show_id(self, show_identifier: int, timeout: float = 10.0) -> List[Actor]:
+        """Get the actors in the given show."""
+
+        Log.info(f"Fetching actors for show id: {show_identifier}")
+
+        actor_data = self.get(f"series/{show_identifier}/actors", timeout=timeout)
+
+        actors: List[Actor] = []
+
+        for actor_data_item in actor_data:
+            actors.append(Actor.from_json(actor_data_item))
+
+        return actors
+
+
+    def actors_from_show(self, show: Show, timeout: float = 10.0) -> List[Actor]:
+        """Get the actors in the given show."""
+        return self.actors_from_show_id(show.identifier, timeout=timeout)

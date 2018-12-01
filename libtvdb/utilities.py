@@ -53,6 +53,9 @@ def parse_datetime(input_string: str) -> datetime.datetime:
     if input_string == "":
         raise ValueError("The input string should not be empty.")
 
+    if input_string == "0000-00-00 00:00:00":
+        raise ValueError("Invalid date time")
+
     return datetime.datetime.strptime(input_string, '%Y-%m-%d %H:%M:%S')
 
 
