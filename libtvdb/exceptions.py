@@ -7,3 +7,8 @@ class TVDBException(Exception):
 class NotFoundException(TVDBException):
     """Thrown when a show is not found after a search."""
     pass
+
+
+class TVDBAuthenticationException(TVDBException):
+    """Thrown on authentication error."""
+    pass

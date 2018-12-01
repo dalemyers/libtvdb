@@ -8,7 +8,7 @@ import urllib.parse
 import keyper
 import requests
 
-from libtvdb.exceptions import TVDBException, NotFoundException
+from libtvdb.exceptions import TVDBException, NotFoundException, TVDBAuthenticationException
 from libtvdb.model.show import Show
 from libtvdb.utilities import Log
 
@@ -82,7 +82,7 @@ class TVDBClient:
         return headers
     #pylint: enable=no-self-use
 
-    def authenticate(self) -> bool:
+    def authenticate(self):
         """Authenticate the client with the API.
 
         This will exit early if we are already authenticated. It does not need
@@ -92,7 +92,7 @@ class TVDBClient:
 
         if self.auth_token is not None:
             Log.debug("Already authenticated, skipping")
-            return True
+            return
 
         Log.info("Authenticating...")
 
@@ -117,28 +117,25 @@ class TVDBClient:
             except requests.exceptions.Timeout:
                 will_retry = i < (TVDBClient.Constants.MAX_AUTH_RETRY_COUNT - 1)
                 if will_retry:
-                    Log.warning(f"Authentication timed out, but will retry.")
+                    Log.warning("Authentication timed out, but will retry.")
                 else:
-                    Log.error(f"Authentication timed out maximum number of times.")
-                    return False
+                    Log.error("Authentication timed out maximum number of times.")
+                    raise Exception("Authentication timed out maximum number of times.")
 
         if response.status_code < 200 or response.status_code >= 300:
             Log.error(f"Authentication failed withs status code: {response.status_code}")
-            return False
+            raise TVDBAuthenticationException(f"Authentication failed with status code: {response.status_code}")
 
         content = response.json()
-
         token = content.get("token")
 
         if token is None:
             Log.error("Failed to get token from login request")
-            return False
+            raise TVDBAuthenticationException("Failed to get token from login request")
 
         self.auth_token = token
 
         Log.info("Authenticated successfully")
-
-        return True
 
     def get(self, url_path: str) -> Any:
         """Search for shows matching the name supplied.
