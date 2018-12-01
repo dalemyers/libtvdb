@@ -137,7 +137,7 @@ class TVDBClient:
 
         Log.info("Authenticated successfully")
 
-    def get(self, url_path: str) -> Any:
+    def get(self, url_path: str, *, timeout: float) -> Any:
         """Search for shows matching the name supplied.
 
         If no matching show is found, a NotFoundException will be thrown.
@@ -152,7 +152,8 @@ class TVDBClient:
 
         response = requests.get(
             self._expand_url(url_path),
-            headers=self._construct_headers()
+            headers=self._construct_headers(),
+            timeout=timeout
         )
 
         if response.status_code < 200 or response.status_code >= 300:
@@ -185,7 +186,7 @@ class TVDBClient:
         return data
 
 
-    def search_show(self, show_name: str) -> List[Show]:
+    def search_show(self, show_name: str, *, timeout: float = 10.0) -> List[Show]:
         """Search for shows matching the name supplied.
 
         If no matching show is found, a NotFoundException will be thrown.
@@ -198,7 +199,7 @@ class TVDBClient:
 
         Log.info(f"Searching for show: {show_name}")
 
-        shows_data = self.get(f"search/series?name={encoded_name}")
+        shows_data = self.get(f"search/series?name={encoded_name}", timeout=timeout)
 
         shows = []
 
@@ -209,12 +210,12 @@ class TVDBClient:
         return shows
 
 
-    def show_info(self, show_identifier: int) -> Optional[Show]:
+    def show_info(self, show_identifier: int, *, timeout: float = 10.0) -> Optional[Show]:
         """Get the full information for the show with the given identifier.
         """
 
         Log.info(f"Fetching data for show: {show_identifier}")
 
-        show_data = self.get(f"series/{show_identifier}")
+        show_data = self.get(f"series/{show_identifier}", timeout=timeout)
 
         return Show.from_json(show_data)
