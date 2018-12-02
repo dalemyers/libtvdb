@@ -114,8 +114,6 @@ class Show:
     def from_json(data: Dict[str, Any]) -> 'Show':
         """Convert Show data from the API to a Show object."""
 
-        print(data)
-
         # Get the fields which are always there
         aliases = require(try_pop(data, 'aliases'))
         first_aired_string = try_pop(data, 'firstAired')

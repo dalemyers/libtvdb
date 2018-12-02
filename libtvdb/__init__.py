@@ -8,6 +8,7 @@ import urllib.parse
 import keyper
 import requests
 
+from libtvdb import networking
 from libtvdb.exceptions import TVDBException, NotFoundException, TVDBAuthenticationException
 from libtvdb.model.actor import Actor
 from libtvdb.model.show import Show
@@ -105,6 +106,7 @@ class TVDBClient:
 
         for i in range(0, TVDBClient.Constants.MAX_AUTH_RETRY_COUNT):
             try:
+                # Don't use the shared session for POST requests
                 response = requests.post(
                     self._expand_url("login"),
                     json=login_body,
