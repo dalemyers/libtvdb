@@ -25,7 +25,6 @@ class ShowTestSuite(BaseTVDBTest):
         self.assertEqual(show.genres, ['Action', 'Adventure', 'Drama', 'Science-Fiction'], f"'{show.genres}' was not equal to expected genres '{['Action', 'Adventure', 'Drama', 'Science-Fiction']}'")
         self.assertEqual(show.identifier, 73739, f"'{show.identifier}' was not equal to expected identifier '73739'")
         self.assertEqual(show.imdb_id, 'tt0411008', f"'{show.imdb_id}' was not equal to expected imdb_id 'tt0411008'")
-        self.assertEqual(show.last_updated, datetime.datetime(2018, 11, 23, 0, 28, 59), f"'{show.last_updated}' was not equal to expected last_updated '{datetime.datetime(2018, 11, 23, 0, 28, 59)}'")
         self.assertEqual(show.name, 'Lost', f"'{show.name}' was not equal to expected name Lost'")
         self.assertEqual(show.network, 'ABC (US)', f"'{show.network}' was not equal to expected network 'ABC (US)'")
         self.assertEqual(show.network_identifier, '', f"'{show.network_identifier}' was not equal to expected network_identifier ''")
@@ -37,6 +36,12 @@ class ShowTestSuite(BaseTVDBTest):
         self.assertEqual(show.slug, 'lost', f"'{show.slug}' was not equal to expected slug 'lost")
         self.assertEqual(show.status, ShowStatus.ended, f"'{show.status}' was not equal to expected status '{ShowStatus.ended}'")
         self.assertEqual(show.zap2it_id, 'SH672362', f"'{show.zap2it_id}' was not equal to expected zap2it_id 'SH672362'")
+
+        self.assertGreaterEqual(
+            show.last_updated,
+            datetime.datetime(2018, 11, 23, 0, 28, 59),
+            f"'{show.last_updated}' was not greater or equal to expected last_updated '{datetime.datetime(2018, 11, 23, 0, 28, 59)}'"
+        )
 
         #pylint: disable=line-too-long
         self.assertEqual(show.overview, 'After their plane, Oceanic Air flight 815, tore apart whilst thousands of miles off course, the survivors find themselves on a mysterious deserted island where they soon find out they are not alone.', f"'{show.overview}' was not equal to expected overview 'After their plane, Oceanic Air flight 815, tore apart whilst thousands of miles off course, the survivors find themselves on a mysterious deserted island where they soon find out they are not alone.'")
