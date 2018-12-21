@@ -5,6 +5,7 @@ import json
 from typing import Any, ClassVar, Dict, List, Optional
 import urllib.parse
 
+import deserialize
 import keyper
 import requests
 
@@ -205,7 +206,7 @@ class TVDBClient:
         shows = []
 
         for show_data in shows_data:
-            show = Show.from_json(show_data)
+            show = deserialize.deserialize(Show, show_data)
             shows.append(show)
 
         return shows
@@ -218,7 +219,7 @@ class TVDBClient:
 
         show_data = self.get(f"series/{show_identifier}", timeout=timeout)
 
-        return Show.from_json(show_data)
+        return deserialize.deserialize(Show, show_data)
 
 
     def actors_from_show_id(self, show_identifier: int, timeout: float = 10.0) -> List[Actor]:
@@ -230,8 +231,10 @@ class TVDBClient:
 
         actors: List[Actor] = []
 
+        import deserialize
+
         for actor_data_item in actor_data:
-            actors.append(Actor.from_json(actor_data_item))
+            actors.append(deserialize.deserialize(Actor, actor_data_item))
 
         return actors
 
