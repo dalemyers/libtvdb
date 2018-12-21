@@ -1,20 +1,6 @@
 """Utility classes and methods for working with the TVDB API."""
 
 import datetime
-from typing import Any, Dict, Optional
-
-def require(value: Optional[Any]) -> Any:
-    """Ensure that a value is present, throwing an exception if not."""
-    if value is None:
-        raise ValueError("Value was None")
-    return value
-
-def try_pop(dictionary: Dict[Any, Any], key: Any) -> Optional[Any]:
-    """Try and pop a key from a dictionary, returning None if it isn't there."""
-    try:
-        return dictionary.pop(key)
-    except KeyError:
-        return None
 
 
 def parse_date(input_string: str) -> datetime.date:
