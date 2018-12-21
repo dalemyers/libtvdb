@@ -230,8 +230,10 @@ class TVDBClient:
 
         actors: List[Actor] = []
 
+        import deserialize
+
         for actor_data_item in actor_data:
-            actors.append(Actor.from_json(actor_data_item))
+            actors.append(deserialize.deserialize(Actor, actor_data_item))
 
         return actors
 
