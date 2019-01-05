@@ -1,5 +1,9 @@
+__pycache__
 .cache/
+.coverage
+.DS_Store
 .mypy_cache/
+*.pyc
 bin/
 coverage.xml
 htmlcov/
