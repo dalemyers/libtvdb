@@ -1,12 +1,12 @@
-"""Test searching for shows."""
+"""Test actors."""
 
 import datetime
 
 from tests.context import BaseTVDBTest
 
 
-class ShowTestSuite(BaseTVDBTest):
-    """Show test cases."""
+class ActorTestSuite(BaseTVDBTest):
+    """Actor test cases."""
 
     def test_actor_parse(self):
         """Test that a show is parsed as we'd expect."""
