@@ -11,6 +11,7 @@ import requests
 
 from libtvdb.exceptions import TVDBException, NotFoundException, TVDBAuthenticationException
 from libtvdb.model.actor import Actor
+from libtvdb.model.episode import Episode
 from libtvdb.model.show import Show
 from libtvdb.utilities import Log
 
@@ -139,6 +140,7 @@ class TVDBClient:
 
         Log.info("Authenticated successfully")
 
+
     def get(self, url_path: str, *, timeout: float) -> Any:
         """Search for shows matching the name supplied.
 
@@ -158,25 +160,7 @@ class TVDBClient:
             timeout=timeout
         )
 
-        if response.status_code < 200 or response.status_code >= 300:
-            # Try and read the JSON. If we don't have it, we return the generic
-            # exception type
-            try:
-                data = response.json()
-            except json.JSONDecodeError:
-                raise TVDBException(f"Could not decode error response: {response.text}")
-
-            # Try and get the error message so we can use it
-            error = data.get('Error')
-
-            # If we don't have it, just return the generic exception type
-            if error is None:
-                raise TVDBException(f"Could not get error information: {response.text}")
-
-            if error == "Resource not found":
-                raise NotFoundException(f"Could not find resource for path: {url_path}")
-            else:
-                raise TVDBException(f"Unknown error: {response.text}")
+        TVDBClient._check_errors(response)
 
         content = response.json()
 
@@ -186,6 +170,56 @@ class TVDBClient:
             raise NotFoundException(f"Could not get data for path: {url_path}")
 
         return data
+
+
+    def get_paged(self, url_path: str, *, timeout: float) -> List[Any]:
+        """Get paged data."""
+
+        if url_path is None or url_path == "":
+            raise AttributeError("An invalid URL path was supplied")
+
+        self.authenticate()
+
+        page = 0
+
+        all_results: List[Any] = []
+
+        while True:
+
+            if page != 0:
+                url_path += f"?page={page}"
+
+            Log.info(f"GET: {url_path}")
+
+            response = requests.get(
+                self._expand_url(url_path),
+                headers=self._construct_headers(),
+                timeout=timeout
+            )
+
+            TVDBClient._check_errors(response)
+
+            content = response.json()
+
+            data = content.get('data')
+
+            if data is None:
+                raise NotFoundException(f"Could not get data for path: {url_path}")
+
+            all_results += data
+
+            links = content.get('links')
+
+            if links is None:
+                break
+
+            if links.get('next'):
+                Log.debug("Fetching next page")
+                page = links["next"]
+            else:
+                break
+
+        return all_results
 
 
     def search_show(self, show_name: str, *, timeout: float = 10.0) -> List[Show]:
@@ -240,3 +274,64 @@ class TVDBClient:
     def actors_from_show(self, show: Show, timeout: float = 10.0) -> List[Actor]:
         """Get the actors in the given show."""
         return self.actors_from_show_id(show.identifier, timeout=timeout)
+
+
+    def episodes_from_show_id(self, show_identifier: int, timeout: float = 10.0) -> List[Episode]:
+        """Get the episodes in the given show."""
+
+        Log.info(f"Fetching episodes for show id: {show_identifier}")
+
+        episode_data = self.get_paged(f"series/{show_identifier}/episodes", timeout=timeout)
+
+        episodes: List[Episode] = []
+
+        for episode_data_item in episode_data:
+            episodes.append(deserialize.deserialize(Episode, episode_data_item))
+
+        return episodes
+
+
+    def episodes_from_show(self, show: Show, timeout: float = 10.0) -> List[Episode]:
+        """Get the episodes in the given show."""
+        return self.episodes_from_show_id(show.identifier, timeout=timeout)
+
+
+    def episode_by_id(self, episode_identifier: int, timeout: float = 10.0) -> Episode:
+        """Get the episode information from its ID."""
+
+        Log.info(f"Fetching info for episode id: {episode_identifier}")
+
+        episode_data = self.get(f"episodes/{episode_identifier}", timeout=timeout)
+
+        print(episode_data)
+
+        return deserialize.deserialize(Episode, episode_data)
+
+
+    @staticmethod
+    def _check_errors(response: requests.Response) -> Any:
+        """Check an API response for errors."""
+
+        if response.status_code >= 200 and response.status_code < 300:
+            return
+
+        Log.error(f"Bad response code from API: {response.status_code}")
+
+        # Try and read the JSON. If we don't have it, we return the generic
+        # exception type
+        try:
+            data = response.json()
+        except json.JSONDecodeError:
+            raise TVDBException(f"Could not decode error response: {response.text}")
+
+        # Try and get the error message so we can use it
+        error = data.get('Error')
+
+        # If we don't have it, just return the generic exception type
+        if error is None:
+            raise TVDBException(f"Could not get error information: {response.text}")
+
+        if error == "Resource not found":
+            raise NotFoundException(f"Could not find resource: {response.url}")
+        else:
+            raise TVDBException(f"Unknown error: {response.text}")
