@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "libtvdb"
-version = "0.1.0"
+version = "0.2.0"
 description = "A wrapper around the TVDB API."
 
 license = "MIT"
@@ -27,7 +27,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-deserialize = "=0.4"
+deserialize = "=0.6"
 keyper = "=0.3"
 requests = "=2.20.1"
 
