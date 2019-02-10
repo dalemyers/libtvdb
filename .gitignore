@@ -6,6 +6,7 @@ __pycache__
 *.pyc
 bin/
 coverage.xml
+dist/
 htmlcov/
 include/
 junit/test-results.xml
