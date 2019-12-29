@@ -7,6 +7,10 @@
         "include/": true,
         "junit/": true,
         "lib/": true,
+        "Scripts/": true,
+        "Lib/": true,
+        "Include/": true,
+        "*.egg-info/": true,
     },
     "python.pythonPath": "bin/python"
 }
