@@ -2,11 +2,11 @@
 
 pushd "${VIRTUAL_ENV}" > /dev/null
 
-python -m pylint --rcfile=pylintrc libtvdb
-python -m mypy --ignore-missing-imports libtvdb/
+source "${VIRTUAL_ENV}/bin/activate"
 
-python -m pylint --rcfile=pylintrc tests
-python -m mypy --ignore-missing-imports tests/
+python -m black --line-length 100 libtvdb tests
+python -m pylint --rcfile=pylintrc libtvdb tests
+python -m mypy --ignore-missing-imports libtvdb/ tests/
 
 popd > /dev/null
 
