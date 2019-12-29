@@ -13,3 +13,5 @@ junit/test-results.xml
 lib/
 pip-selfcheck.json
 pyvenv.cfg
+libtvdb.egg-info/
+Scripts/
