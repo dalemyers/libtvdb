@@ -6,7 +6,6 @@ from typing import Any, ClassVar, Dict, List, Optional
 import urllib.parse
 
 import deserialize
-import keyper
 import requests
 
 from libtvdb.exceptions import TVDBException, NotFoundException, TVDBAuthenticationException
@@ -29,7 +28,7 @@ class TVDBClient:
 
     _BASE_API: ClassVar[str] = "https://api.thetvdb.com"
 
-    def __init__(self, *, api_key: Optional[str] = None, user_key: Optional[str] = None, user_name: Optional[str] = None) -> None:
+    def __init__(self, *, api_key: str, user_key: str, user_name: str) -> None:
         """Create a new client wrapper.
 
         If any of the supplied parameters are None, they will be loaded from the
@@ -37,22 +36,13 @@ class TVDBClient:
         """
 
         if api_key is None:
-            api_key = keyper.get_password(label="libtvdb_api_key")
-
-        if api_key is None:
-            raise Exception("No API key was supplied or could be found in the keychain")
+            raise Exception("No API key was supplied")
 
         if user_key is None:
-            user_key = keyper.get_password(label="libtvdb_user_key")
-
-        if user_key is None:
-            raise Exception("No user key was supplied or could be found in the keychain")
+            raise Exception("No user key was supplied")
 
         if user_name is None:
-            user_name = keyper.get_password(label="libtvdb_user_name")
-
-        if user_name is None:
-            raise Exception("No user name was supplied or could be found in the keychain")
+            raise Exception("No user name was supplied")
 
         self.api_key = api_key
         self.user_key = user_key
