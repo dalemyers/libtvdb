@@ -28,10 +28,10 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.7"
 deserialize = "=0.7.0"
-keyper = "=0.3"
 requests = "=2.20.1"
 
 [tool.poetry.dev-dependencies]
+keyper = "=0.3"
 mypy = "=0.641"
 pylint = "=2.1.1"
 pytest = "=4.0.1"
