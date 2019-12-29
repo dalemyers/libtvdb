@@ -74,7 +74,7 @@ class Show:
     status: ShowStatus
     first_aired: Optional[datetime.date]
     aliases: List[str]
-    network: str
+    network: Optional[str]
     overview: Optional[str]
     banner: Optional[str]
 
