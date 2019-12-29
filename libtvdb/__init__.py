@@ -23,6 +23,7 @@ class TVDBClient:
 
     class Constants:
         """Constants that are used elsewhere in the TVDBClient class."""
+
         AUTH_TIMEOUT: ClassVar[float] = 3
         MAX_AUTH_RETRY_COUNT: ClassVar[int] = 3
 
@@ -49,19 +50,18 @@ class TVDBClient:
         self.user_name = user_name
         self.auth_token = None
 
-    #pylint: disable=no-self-use
+    # pylint: disable=no-self-use
     def _expand_url(self, path: str) -> str:
         """Take the path from a URL and expand it to the full API path."""
         return f"{TVDBClient._BASE_API}/{path}"
-    #pylint: enable=no-self-use
 
-    #pylint: disable=no-self-use
+    # pylint: enable=no-self-use
+
+    # pylint: disable=no-self-use
     def _construct_headers(self, *, additional_headers: Optional[Any] = None) -> Dict[str, str]:
         """Construct the headers used for all requests, inserting any additional headers as required."""
 
-        headers = {
-            "Accept": "application/json"
-        }
+        headers = {"Accept": "application/json"}
 
         if self.auth_token is not None:
             headers["Authorization"] = f"Bearer {self.auth_token}"
@@ -73,7 +73,8 @@ class TVDBClient:
             headers[header_name] = header_value
 
         return headers
-    #pylint: enable=no-self-use
+
+    # pylint: enable=no-self-use
 
     def authenticate(self):
         """Authenticate the client with the API.
@@ -101,7 +102,7 @@ class TVDBClient:
                     self._expand_url("login"),
                     json=login_body,
                     headers=self._construct_headers(),
-                    timeout=TVDBClient.Constants.AUTH_TIMEOUT
+                    timeout=TVDBClient.Constants.AUTH_TIMEOUT,
                 )
 
                 # Since we authenticated successfully, we can break out of the
@@ -117,7 +118,9 @@ class TVDBClient:
 
         if response.status_code < 200 or response.status_code >= 300:
             Log.error(f"Authentication failed withs status code: {response.status_code}")
-            raise TVDBAuthenticationException(f"Authentication failed with status code: {response.status_code}")
+            raise TVDBAuthenticationException(
+                f"Authentication failed with status code: {response.status_code}"
+            )
 
         content = response.json()
         token = content.get("token")
@@ -129,7 +132,6 @@ class TVDBClient:
         self.auth_token = token
 
         Log.info("Authenticated successfully")
-
 
     def get(self, url_path: str, *, timeout: float) -> Any:
         """Search for shows matching the name supplied.
@@ -145,22 +147,19 @@ class TVDBClient:
         Log.info(f"GET: {url_path}")
 
         response = requests.get(
-            self._expand_url(url_path),
-            headers=self._construct_headers(),
-            timeout=timeout
+            self._expand_url(url_path), headers=self._construct_headers(), timeout=timeout
         )
 
         TVDBClient._check_errors(response)
 
         content = response.json()
 
-        data = content.get('data')
+        data = content.get("data")
 
         if data is None:
             raise NotFoundException(f"Could not get data for path: {url_path}")
 
         return data
-
 
     def get_paged(self, url_path: str, *, timeout: float) -> List[Any]:
         """Get paged data."""
@@ -182,35 +181,32 @@ class TVDBClient:
             Log.info(f"GET: {url_path}")
 
             response = requests.get(
-                self._expand_url(url_path),
-                headers=self._construct_headers(),
-                timeout=timeout
+                self._expand_url(url_path), headers=self._construct_headers(), timeout=timeout
             )
 
             TVDBClient._check_errors(response)
 
             content = response.json()
 
-            data = content.get('data')
+            data = content.get("data")
 
             if data is None:
                 raise NotFoundException(f"Could not get data for path: {url_path}")
 
             all_results += data
 
-            links = content.get('links')
+            links = content.get("links")
 
             if links is None:
                 break
 
-            if links.get('next'):
+            if links.get("next"):
                 Log.debug("Fetching next page")
                 page = links["next"]
             else:
                 break
 
         return all_results
-
 
     def search_show(self, show_name: str, *, timeout: float = 10.0) -> List[Show]:
         """Search for shows matching the name supplied.
@@ -235,7 +231,6 @@ class TVDBClient:
 
         return shows
 
-
     def show_info(self, show_identifier: int, *, timeout: float = 10.0) -> Optional[Show]:
         """Get the full information for the show with the given identifier."""
 
@@ -244,7 +239,6 @@ class TVDBClient:
         show_data = self.get(f"series/{show_identifier}", timeout=timeout)
 
         return deserialize.deserialize(Show, show_data)
-
 
     def actors_from_show_id(self, show_identifier: int, timeout: float = 10.0) -> List[Actor]:
         """Get the actors in the given show."""
@@ -260,11 +254,9 @@ class TVDBClient:
 
         return actors
 
-
     def actors_from_show(self, show: Show, timeout: float = 10.0) -> List[Actor]:
         """Get the actors in the given show."""
         return self.actors_from_show_id(show.identifier, timeout=timeout)
-
 
     def episodes_from_show_id(self, show_identifier: int, timeout: float = 10.0) -> List[Episode]:
         """Get the episodes in the given show."""
@@ -280,11 +272,9 @@ class TVDBClient:
 
         return episodes
 
-
     def episodes_from_show(self, show: Show, timeout: float = 10.0) -> List[Episode]:
         """Get the episodes in the given show."""
         return self.episodes_from_show_id(show.identifier, timeout=timeout)
-
 
     def episode_by_id(self, episode_identifier: int, timeout: float = 10.0) -> Episode:
         """Get the episode information from its ID."""
@@ -296,7 +286,6 @@ class TVDBClient:
         print(episode_data)
 
         return deserialize.deserialize(Episode, episode_data)
-
 
     @staticmethod
     def _check_errors(response: requests.Response) -> Any:
@@ -315,7 +304,7 @@ class TVDBClient:
             raise TVDBException(f"Could not decode error response: {response.text}")
 
         # Try and get the error message so we can use it
-        error = data.get('Error')
+        error = data.get("Error")
 
         # If we don't have it, just return the generic exception type
         if error is None:
@@ -323,5 +312,5 @@ class TVDBClient:
 
         if error == "Resource not found":
             raise NotFoundException(f"Could not find resource: {response.url}")
-        else:
-            raise TVDBException(f"Unknown error: {response.text}")
+
+        raise TVDBException(f"Unknown error: {response.text}")

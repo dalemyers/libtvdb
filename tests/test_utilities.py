@@ -29,7 +29,11 @@ class UtilitiesTestSuite(BaseTVDBTest):
         ]
 
         for date_string, date_value in valid_test_cases:
-            self.assertEqual(date_value, libtvdb.utilities.parse_date(date_string), f"{date_string} was not equal to the expected: {date_value}")
+            self.assertEqual(
+                date_value,
+                libtvdb.utilities.parse_date(date_string),
+                f"{date_string} was not equal to the expected: {date_value}",
+            )
 
         for date_string in invalid_test_cases:
             with self.assertRaises(ValueError):

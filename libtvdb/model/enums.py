@@ -5,17 +5,19 @@ import enum
 
 class ShowStatus(enum.Enum):
     """Represents the status of a show."""
-    continuing = 'Continuing'
-    ended = 'Ended'
-    unknown = 'Unknown'
+
+    continuing = "Continuing"
+    ended = "Ended"
+    unknown = "Unknown"
 
 
 class AirDay(enum.Enum):
     """Represents when a show airs."""
-    monday = 'Monday'
-    tuesday = 'Tuesday'
-    wednesday = 'Wednesday'
-    thursday = 'Thursday'
-    friday = 'Friday'
-    saturday = 'Saturday'
-    sunday = 'Sunday'
+
+    monday = "Monday"
+    tuesday = "Tuesday"
+    wednesday = "Wednesday"
+    thursday = "Thursday"
+    friday = "Friday"
+    saturday = "Saturday"
+    sunday = "Sunday"

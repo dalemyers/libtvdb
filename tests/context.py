@@ -7,10 +7,11 @@ import unittest
 
 import keyper
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-#pylint: disable=wrong-import-position
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# pylint: disable=wrong-import-position
 import libtvdb
-#pylint: enable=wrong-import-position
+
+# pylint: enable=wrong-import-position
 
 
 class BaseTVDBTest(unittest.TestCase):
@@ -36,9 +37,7 @@ class BaseTVDBTest(unittest.TestCase):
             raise Exception("Faield to get user name")
 
         BaseTVDBTest._client = libtvdb.TVDBClient(
-            api_key=api_key,
-            user_key=user_key,
-            user_name=user_name
+            api_key=api_key, user_key=user_key, user_name=user_name
         )
 
     @classmethod
@@ -50,10 +49,11 @@ class BaseTVDBTest(unittest.TestCase):
 
         return os.environ.get(secret_name.upper())
 
-    #pylint: disable=no-self-use
+    # pylint: disable=no-self-use
     def client(self) -> libtvdb.TVDBClient:
         """A class reference to the client to clean up the tests."""
         if BaseTVDBTest._client is None:
             raise Exception("Client was not set")
         return BaseTVDBTest._client
-    #pylint: enable=no-self-use
+
+    # pylint: enable=no-self-use

@@ -14,7 +14,7 @@ def date_parser(value: Optional[str]) -> Optional[datetime.date]:
     if value is None:
         return None
 
-    if value in ['', '0000-00-00']:
+    if value in ["", "0000-00-00"]:
         return None
 
     return parse_date(value)
@@ -25,7 +25,7 @@ def datetime_parser(value: Optional[str]) -> Optional[datetime.datetime]:
     if value is None:
         return None
 
-    if value in ['', '0000-00-00 00:00:00']:
+    if value in ["", "0000-00-00 00:00:00"]:
         return None
 
     return parse_datetime(value)
@@ -41,7 +41,7 @@ def timestamp_parser(value: Optional[int]) -> Optional[datetime.datetime]:
 
 def status_parser(value: Optional[str]) -> str:
     """Parser method for cleaning up statuses to pass to deserialize."""
-    if value is None or value == '':
+    if value is None or value == "":
         return ShowStatus.unknown.value
 
     return value

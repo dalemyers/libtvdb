@@ -7,15 +7,17 @@ import deserialize
 
 from libtvdb.utilities import parse_datetime
 
+
 def datetime_parser(value: Optional[str]) -> Optional[datetime.datetime]:
     """Parser method for parsing datetimes to pass to deserialize."""
     if value is None:
         return None
 
-    if value == '0000-00-00 00:00:00':
+    if value == "0000-00-00 00:00:00":
         return None
 
     return parse_datetime(value)
+
 
 @deserialize.key("identifier", "id")
 @deserialize.key("series_identifier", "seriesId")

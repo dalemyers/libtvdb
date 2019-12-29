@@ -31,6 +31,7 @@ deserialize = "^1.2"
 requests = "^2.22"
 
 [tool.poetry.dev-dependencies]
+black = "19.10b0"
 keyper = "=0.5.0"
 mypy = "=0.761"
 pylint = "=2.4.4"

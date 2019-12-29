@@ -21,7 +21,6 @@ class ActorTestSuite(BaseTVDBTest):
         for show_id in show_ids:
             _ = self.client().actors_from_show_id(show_id)
 
-
     def test_actor_properties(self):
         """Test that a specific actor parses as expected."""
 
@@ -39,13 +38,43 @@ class ActorTestSuite(BaseTVDBTest):
 
         self.assertIsNotNone(actor, "Failed to find Peter Dinklage in Game of Thrones actors")
 
-        #pylint: disable=line-too-long
-        self.assertEqual(actor.series_identifier, show_id, f"'{actor.series_identifier}' was not equal to expected series ID '{show_id}'")
-        self.assertEqual(actor.name, "Peter Dinklage", f"'{actor.name}' was not equal to expected name 'Peter Dinklage'")
-        self.assertEqual(actor.role, 'Tyrion Lannister', f"'{actor.role}' was not equal to expected role 'Tyrion Lannister'")
-        self.assertEqual(actor.sort_order, 0, f"'{actor.sort_order}' was not equal to expected sort order '0'")
-        self.assertEqual(actor.image, 'actors/440978.jpg', f"'{actor.image}' was not equal to expected image 'actors/440978.jpg'")
-        self.assertEqual(actor.image_author, 235, f"'{actor.image_author}' was not equal to expected image author '235'")
-        self.assertEqual(actor.image_added, datetime.datetime(2017, 8, 17, 11, 12, 18), f"'{actor.image_added}' was not equal to expected image added '{datetime.datetime(2017, 8, 17, 11, 12, 18)}'")
-        self.assertEqual(actor.last_updated, datetime.datetime(2018, 3, 15, 17, 17, 44), f"'{actor.last_updated}' was not equal to expected last updated '{datetime.datetime(2018, 3, 15, 17, 17, 44)}'")
-        #pylint: enable=line-too-long
+        # pylint: disable=line-too-long
+        self.assertEqual(
+            actor.series_identifier,
+            show_id,
+            f"'{actor.series_identifier}' was not equal to expected series ID '{show_id}'",
+        )
+        self.assertEqual(
+            actor.name,
+            "Peter Dinklage",
+            f"'{actor.name}' was not equal to expected name 'Peter Dinklage'",
+        )
+        self.assertEqual(
+            actor.role,
+            "Tyrion Lannister",
+            f"'{actor.role}' was not equal to expected role 'Tyrion Lannister'",
+        )
+        self.assertEqual(
+            actor.sort_order, 0, f"'{actor.sort_order}' was not equal to expected sort order '0'"
+        )
+        self.assertEqual(
+            actor.image,
+            "actors/440978.jpg",
+            f"'{actor.image}' was not equal to expected image 'actors/440978.jpg'",
+        )
+        self.assertEqual(
+            actor.image_author,
+            235,
+            f"'{actor.image_author}' was not equal to expected image author '235'",
+        )
+        self.assertEqual(
+            actor.image_added,
+            datetime.datetime(2017, 8, 17, 11, 12, 18),
+            f"'{actor.image_added}' was not equal to expected image added '{datetime.datetime(2017, 8, 17, 11, 12, 18)}'",
+        )
+        self.assertEqual(
+            actor.last_updated,
+            datetime.datetime(2018, 3, 15, 17, 17, 44),
+            f"'{actor.last_updated}' was not equal to expected last updated '{datetime.datetime(2018, 3, 15, 17, 17, 44)}'",
+        )
+        # pylint: enable=line-too-long

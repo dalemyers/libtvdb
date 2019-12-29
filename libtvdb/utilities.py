@@ -21,7 +21,9 @@ def parse_date(input_string: str) -> datetime.date:
         try:
             _ = int(component)
         except ValueError:
-            raise ValueError("The input string should be of the format YYYY-MM-DD, where each date component is an integer.")
+            raise ValueError(
+                "The input string should be of the format YYYY-MM-DD, where each date component is an integer."
+            )
 
     year = int(components[0])
     month = int(components[1])
@@ -42,7 +44,7 @@ def parse_datetime(input_string: str) -> datetime.datetime:
     if input_string == "0000-00-00 00:00:00":
         raise ValueError("Invalid date time")
 
-    return datetime.datetime.strptime(input_string, '%Y-%m-%d %H:%M:%S')
+    return datetime.datetime.strptime(input_string, "%Y-%m-%d %H:%M:%S")
 
 
 class Log:
