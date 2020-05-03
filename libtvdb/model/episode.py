@@ -124,7 +124,7 @@ class Episode:
     site_rating: float
     site_rating_count: int
     thumb_added: Optional[str]
-    thumb_author: int
+    thumb_author: Optional[int]
     thumb_height: Optional[str]
     thumb_width: Optional[str]
     writers: List[str]
