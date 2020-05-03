@@ -8,6 +8,7 @@ class ShowStatus(enum.Enum):
 
     continuing = "Continuing"
     ended = "Ended"
+    upcoming = "Upcoming"
     unknown = "Unknown"
 
 
