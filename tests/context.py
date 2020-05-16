@@ -28,13 +28,13 @@ class BaseTVDBTest(unittest.TestCase):
         user_name = BaseTVDBTest._read_secret("libtvdb_user_name")
 
         if api_key is None:
-            raise Exception("Faield to get API Key")
+            raise Exception("Failed to get API Key")
 
         if user_key is None:
-            raise Exception("Faield to get user Key")
+            raise Exception("Failed to get user Key")
 
         if user_name is None:
-            raise Exception("Faield to get user name")
+            raise Exception("Failed to get user name")
 
         BaseTVDBTest._client = libtvdb.TVDBClient(
             api_key=api_key, user_key=user_key, user_name=user_name

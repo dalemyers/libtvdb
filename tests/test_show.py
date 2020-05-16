@@ -15,9 +15,9 @@ class ShowTestSuite(BaseTVDBTest):
 
         show = self.client().show_info(73739)
 
-        self.assertEqual(show.added, None, f"'{show.added}' was not equal to expected added 'None'")
+        self.assertIsNotNone(show.added, f"'{show.added}' was expected to not be None")
         self.assertEqual(
-            show.added_by, None, f"'{show.added_by}' was not equal to expected added by 'None'"
+            show.added_by, 1, f"'{show.added_by}' was not equal to expected added by '1'"
         )
         self.assertEqual(
             show.air_day,
@@ -46,8 +46,8 @@ class ShowTestSuite(BaseTVDBTest):
         )
         self.assertEqual(
             show.genres,
-            ["Action", "Adventure", "Drama", "Science-Fiction"],
-            f"'{show.genres}' was not equal to expected genres '{['Action', 'Adventure', 'Drama', 'Science-Fiction']}'",
+            ["Action", "Adventure", "Drama", "Science Fiction"],
+            f"'{show.genres}' was not equal to expected genres '{['Action', 'Adventure', 'Drama', 'Science Fiction']}'",
         )
         self.assertEqual(
             show.identifier,
@@ -67,7 +67,7 @@ class ShowTestSuite(BaseTVDBTest):
         )
         self.assertEqual(
             show.network_identifier,
-            "",
+            "5",
             f"'{show.network_identifier}' was not equal to expected network_identifier ''",
         )
         self.assertEqual(
@@ -85,11 +85,6 @@ class ShowTestSuite(BaseTVDBTest):
             show.site_rating,
             9.1,
             f"'{show.site_rating}' was not equal to expected site_rating '9.1'",
-        )
-        self.assertEqual(
-            show.site_rating_count,
-            768,
-            f"'{show.site_rating_count}' was not equal to expected site_rating_count '768'",
         )
         self.assertEqual(show.slug, "lost", f"'{show.slug}' was not equal to expected slug 'lost")
         self.assertEqual(

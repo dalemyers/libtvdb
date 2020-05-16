@@ -1,0 +1,7 @@
+typing
+datetime
+deserialize
+keyper
+requests
+urllib3
+pytest-cov
