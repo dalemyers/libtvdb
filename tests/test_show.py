@@ -6,7 +6,6 @@ from tests.context import BaseTVDBTest
 
 from libtvdb.model.enums import AirDay, ShowStatus
 
-
 class ShowTestSuite(BaseTVDBTest):
     """Show test cases."""
 
