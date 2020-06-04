@@ -76,7 +76,7 @@ class SearchTestSuite(BaseTVDBTest):
             f"'{show.first_aired}' was not equal to expected first_aired '{datetime.date(2009, 3, 18)}'",
         )
         self.assertEqual(
-            show.aliases, [], f"'{show.aliases}' was not equal to expected aliases '[]'"
+            show.aliases, ['Better off Ted - Die Chaos AG'], f"'{show.aliases}' was not equal to expected aliases '[]'"
         )
         self.assertEqual(
             show.network,
@@ -90,6 +90,6 @@ class SearchTestSuite(BaseTVDBTest):
         )
         self.assertEqual(
             show.banner,
-            "graphical/84021-g3.jpg",
-            f"'{show.banner}' was not equal to expected banner 'graphical/84021-g3.jpg'",
+            "/banners/graphical/84021-g3.jpg",
+            f"'{show.banner}' was not equal to expected banner '/banners/graphical/84021-g3.jpg'",
         )

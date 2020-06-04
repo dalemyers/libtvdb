@@ -208,20 +208,28 @@ class TVDBClient:
 
         return all_results
 
-    def search_show(self, show_name: str, *, timeout: float = 10.0) -> List[Show]:
+    def search_show(self, show_name: str = None, imdb_name: str = None, *, timeout: float = 10.0) -> List[Show]:
         """Search for shows matching the name supplied.
 
         If no matching show is found, a NotFoundException will be thrown.
         """
 
-        if show_name is None or show_name == "":
+        if not show_name and not imdb_name:
             return []
 
-        encoded_name = urllib.parse.quote(show_name)
+        params = encoded_name = ""
 
-        Log.info(f"Searching for show: {show_name}")
+        if show_name:
+            params = "name={}".format(show_name)
+            encoded_name = urllib.parse.quote(show_name)
+        elif imdb_name:
+            params = "imdbId={}".format(imdb_name)
+            encoded_name = urllib.parse.quote(imdb_name)
 
-        shows_data = self.get(f"search/series?name={encoded_name}", timeout=timeout)
+
+        Log.info(f"Searching for show: {show_name} {imdb_name}")
+
+        shows_data = self.get(f"search/series?{params}", timeout=timeout)
 
         shows = []
 
