@@ -182,12 +182,16 @@ class TVDBClient:
         while True:
 
             if page != 0:
-                url_path += f"?page={page}"
+                paged_url_path = f"{url_path}?page={page}"
+            else:
+                paged_url_path = url_path
 
-            Log.info(f"GET: {url_path}")
+            Log.info(f"GET: {paged_url_path}")
 
             response = requests.get(
-                self._expand_url(url_path), headers=self._construct_headers(), timeout=timeout
+                self._expand_url(paged_url_path),
+                headers=self._construct_headers(),
+                timeout=timeout,
             )
 
             TVDBClient._check_errors(response)

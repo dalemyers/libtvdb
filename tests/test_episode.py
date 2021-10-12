@@ -12,6 +12,7 @@ class EpisodeTestSuite(BaseTVDBTest):
         """Test that a shows episodes are parsed as we'd expect."""
 
         show_ids = [
+            95011,  # Modern Family
             121361,  # Game of thrones
             295759,  # Supergirl
             73739,  # Lost
@@ -37,7 +38,9 @@ class EpisodeTestSuite(BaseTVDBTest):
             f"'{episode.identifier}' was not equal to expected '6814868'",
         )
         self.assertEqual(
-            episode.aired_season, 5, f"'{episode.aired_season}' was not equal to expected '5'"
+            episode.aired_season,
+            5,
+            f"'{episode.aired_season}' was not equal to expected '5'",
         )
         self.assertEqual(
             episode.aired_season_id,
@@ -58,13 +61,19 @@ class EpisodeTestSuite(BaseTVDBTest):
             episode.first_aired, "Episode was not expected to have firsted aired data"
         )
         self.assertEqual(
-            episode.guest_stars, [], f"'{episode.guest_stars}' was not equal to expected '[]'"
+            episode.guest_stars,
+            [],
+            f"'{episode.guest_stars}' was not equal to expected '[]'",
         )
         self.assertEqual(
-            episode.director, "||", f"'{episode.director}' was not equal to expected '||'"
+            episode.director,
+            "||",
+            f"'{episode.director}' was not equal to expected '||'",
         )
         self.assertEqual(
-            episode.directors, [], f"'{episode.directors}' was not equal to expected '[]'"
+            episode.directors,
+            [],
+            f"'{episode.directors}' was not equal to expected '[]'",
         )
         self.assertEqual(episode.writers, [], f"'{episode.writers}' was not equal to expected '[]'")
         self.assertIsNone(episode.overview, "Episode was not expected to have overview")
@@ -90,7 +99,8 @@ class EpisodeTestSuite(BaseTVDBTest):
         self.assertIsNone(episode.dvd_disc_id, "Episode was not expected to have DVD disc ID")
         self.assertIsNone(episode.dvd_season, "Episode was not expected to have DVD season")
         self.assertIsNone(
-            episode.dvd_episode_number, "Episode was not expected to have DVD episode number"
+            episode.dvd_episode_number,
+            "Episode was not expected to have DVD episode number",
         )
         self.assertIsNone(episode.dvd_chapter, "Episode was not expected to have DVD chapter")
         self.assertIsNone(
@@ -98,23 +108,30 @@ class EpisodeTestSuite(BaseTVDBTest):
         )
         self.assertIsNone(episode.file_name, "Episode was not expected to have file name")
         self.assertEqual(
-            episode.series_id, 281470, f"'{episode.series_id}' was not equal to expected '281470'"
+            episode.series_id,
+            281470,
+            f"'{episode.series_id}' was not equal to expected '281470'",
         )
         self.assertIsNone(
-            episode.airs_after_season, "Episode was not expected to have airs after season"
+            episode.airs_after_season,
+            "Episode was not expected to have airs after season",
         )
         self.assertIsNone(
-            episode.airs_before_season, "Episode was not expected to have airs before season"
+            episode.airs_before_season,
+            "Episode was not expected to have airs before season",
         )
         self.assertIsNone(
-            episode.airs_before_episode, "Episode was not expected to have airs before episode"
+            episode.airs_before_episode,
+            "Episode was not expected to have airs before episode",
         )
         self.assertIsNone(episode.thumb_added, "Episode was not expected to have thumb added")
         self.assertIsNone(episode.thumb_width, "Episode was not expected to have thumb width")
         self.assertIsNone(episode.thumb_height, "Episode was not expected to have thumb height")
         self.assertIsNone(episode.imdb_id, "Episode was not expected to have imdb ID")
         self.assertEqual(
-            episode.site_rating, 0, f"'{episode.site_rating}' was not equal to expected '0'"
+            episode.site_rating,
+            0,
+            f"'{episode.site_rating}' was not equal to expected '0'",
         )
         self.assertEqual(
             episode.site_rating_count,
@@ -134,10 +151,14 @@ class EpisodeTestSuite(BaseTVDBTest):
 
         # pylint: disable=line-too-long
         self.assertEqual(
-            episode.identifier, 314260, f"'{episode.identifier}' was not equal to expected '314260'"
+            episode.identifier,
+            314260,
+            f"'{episode.identifier}' was not equal to expected '314260'",
         )
         self.assertEqual(
-            episode.aired_season, 3, f"'{episode.aired_season}' was not equal to expected '3'"
+            episode.aired_season,
+            3,
+            f"'{episode.aired_season}' was not equal to expected '3'",
         )
         self.assertEqual(
             episode.aired_season_id,
@@ -218,7 +239,9 @@ class EpisodeTestSuite(BaseTVDBTest):
         )
         self.assertIsNone(episode.dvd_disc_id, "Episode was not expected to have DVD disc ID")
         self.assertEqual(
-            episode.dvd_season, 3, f"'{episode.dvd_season}' was not equal to expected '3'"
+            episode.dvd_season,
+            3,
+            f"'{episode.dvd_season}' was not equal to expected '3'",
         )
         self.assertEqual(
             episode.dvd_episode_number,
@@ -227,7 +250,9 @@ class EpisodeTestSuite(BaseTVDBTest):
         )
         self.assertIsNone(episode.dvd_chapter, "Episode was not expected to have DVD chapter")
         self.assertEqual(
-            episode.absolute_number, 0, f"'{episode.absolute_number}' was not equal to expected '0'"
+            episode.absolute_number,
+            0,
+            f"'{episode.absolute_number}' was not equal to expected '0'",
         )
         self.assertEqual(
             episode.file_name,
@@ -235,16 +260,21 @@ class EpisodeTestSuite(BaseTVDBTest):
             f"'{episode.file_name}' was not equal to expected 'episodes/73739/314260.jpg'",
         )
         self.assertEqual(
-            episode.series_id, 73739, f"'{episode.series_id}' was not equal to expected '73739'"
+            episode.series_id,
+            73739,
+            f"'{episode.series_id}' was not equal to expected '73739'",
         )
         self.assertIsNone(
-            episode.airs_after_season, "Episode was not expected to have airs after season"
+            episode.airs_after_season,
+            "Episode was not expected to have airs after season",
         )
         self.assertIsNone(
-            episode.airs_before_season, "Episode was not expected to have airs before season"
+            episode.airs_before_season,
+            "Episode was not expected to have airs before season",
         )
         self.assertIsNone(
-            episode.airs_before_episode, "Episode was not expected to have airs before episode"
+            episode.airs_before_episode,
+            "Episode was not expected to have airs before episode",
         )
         self.assertIsNone(episode.thumb_added, "Episode was not expected to have thumb added")
         self.assertEqual(
