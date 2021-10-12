@@ -8,7 +8,11 @@ import urllib.parse
 import deserialize
 import requests
 
-from libtvdb.exceptions import TVDBException, NotFoundException, TVDBAuthenticationException
+from libtvdb.exceptions import (
+    TVDBException,
+    NotFoundException,
+    TVDBAuthenticationException,
+)
 from libtvdb.model.actor import Actor
 from libtvdb.model.episode import Episode
 from libtvdb.model.show import Show
@@ -147,7 +151,9 @@ class TVDBClient:
         Log.info(f"GET: {url_path}")
 
         response = requests.get(
-            self._expand_url(url_path), headers=self._construct_headers(), timeout=timeout
+            self._expand_url(url_path),
+            headers=self._construct_headers(),
+            timeout=timeout,
         )
 
         TVDBClient._check_errors(response)
