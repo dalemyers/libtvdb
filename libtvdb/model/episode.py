@@ -108,7 +108,7 @@ class Episode:
     dvd_disc_id: Optional[str]
     dvd_episode_number: Optional[float]
     dvd_season: Optional[int]
-    episode_name: str
+    episode_name: Optional[str]
     file_name: Optional[str]
     first_aired: Optional[datetime.date]
     guest_stars: List[str]
