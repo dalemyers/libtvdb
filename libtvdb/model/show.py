@@ -60,6 +60,7 @@ class Genre:
 @deserialize.parser("last_updated", datetime_parser)
 @deserialize.parser("next_aired", date_parser)
 @deserialize.parser("name_translated", translated_name_parser)
+@deserialize.parser("score", float)
 @deserialize.auto_snake()
 class Show:
     """Represents a single show."""

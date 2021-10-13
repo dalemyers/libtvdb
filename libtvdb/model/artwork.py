@@ -9,6 +9,7 @@ from libtvdb.model.tags import TagOption
 @deserialize.key("identifier", "id")
 @deserialize.key("artwork_type", "type")
 @deserialize.parser("id", str)
+@deserialize.parser("score", float)
 @deserialize.auto_snake()
 class Artwork:
     """Represents an artwork."""
@@ -18,7 +19,7 @@ class Artwork:
     thumbnail: str
     language: Optional[str]
     artwork_type: int
-    score: Optional[int]
+    score: Optional[float]
     width: int
     height: int
     thumbnail_width: int
