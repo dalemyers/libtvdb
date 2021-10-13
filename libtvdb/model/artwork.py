@@ -16,9 +16,9 @@ class Artwork:
     identifier: str
     image: str
     thumbnail: str
-    language: str
+    language: Optional[str]
     artwork_type: int
-    score: int
+    score: Optional[int]
     width: int
     height: int
     thumbnail_width: int
