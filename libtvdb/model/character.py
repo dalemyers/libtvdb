@@ -4,8 +4,8 @@ from typing import List, Optional
 
 import deserialize
 
-from libtvdb.model import Alias
-from libtvdb.model import (
+from libtvdb.model.alias import Alias
+from libtvdb.model.parsers import (
     optional_empty_str,
 )
 

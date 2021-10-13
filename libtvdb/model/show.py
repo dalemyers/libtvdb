@@ -6,14 +6,14 @@ from typing import Any, Dict, List, Optional, Union
 
 import deserialize
 
-from libtvdb.model import Artwork
-from libtvdb.model import Character
-from libtvdb.model import Company
-from libtvdb.model import Status, StatusName
-from libtvdb.model import RemoteID
-from libtvdb.model import SeasonBase
-from libtvdb.model import Trailer
-from libtvdb.model import date_parser, datetime_parser
+from libtvdb.model.artwork import Artwork
+from libtvdb.model.character import Character
+from libtvdb.model.company import Company
+from libtvdb.model.status import Status, StatusName
+from libtvdb.model.remote_id import RemoteID
+from libtvdb.model.season import SeasonBase
+from libtvdb.model.trailer import Trailer
+from libtvdb.model.parsers import date_parser, datetime_parser
 
 
 def translated_name_parser(value: Optional[str]) -> Dict[str, str]:

@@ -6,15 +6,15 @@ from typing import Any, Dict, List, Optional
 
 import deserialize
 
-from libtvdb.model import date_parser, datetime_parser
-from libtvdb.model import AwardBase
-from libtvdb.model import Character
-from libtvdb.model import ContentRating
-from libtvdb.model import NetworkBase
-from libtvdb.model import RemoteID
-from libtvdb.model import SeasonBase
-from libtvdb.model import TagOption
-from libtvdb.model import Trailer
+from libtvdb.model.parsers import date_parser, datetime_parser
+from libtvdb.model.award import AwardBase
+from libtvdb.model.character import Character
+from libtvdb.model.content_rating import ContentRating
+from libtvdb.model.network import NetworkBase
+from libtvdb.model.remote_id import RemoteID
+from libtvdb.model.season import SeasonBase
+from libtvdb.model.tags import TagOption
+from libtvdb.model.trailer import Trailer
 
 
 @deserialize.auto_snake()

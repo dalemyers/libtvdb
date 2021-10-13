@@ -5,7 +5,7 @@ from typing import Optional
 
 import deserialize
 
-from libtvdb.model import datetime_parser
+from libtvdb.model.parsers import datetime_parser
 
 
 @deserialize.key("identifier", "id")

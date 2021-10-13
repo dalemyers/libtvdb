@@ -3,7 +3,7 @@
 from typing import Any, Dict, Optional
 import deserialize
 
-from libtvdb.model import TagOption
+from libtvdb.model.tags import TagOption
 
 
 @deserialize.key("identifier", "id")
