@@ -20,10 +20,10 @@ def parse_date(input_string: str) -> datetime.date:
     for component in components:
         try:
             _ = int(component)
-        except ValueError:
+        except ValueError as ex:
             raise ValueError(
                 "The input string should be of the format YYYY-MM-DD, where each date component is an integer."
-            )
+            ) from ex
 
     year = int(components[0])
     month = int(components[1])

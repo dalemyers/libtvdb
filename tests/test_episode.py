@@ -12,6 +12,7 @@ class EpisodeTestSuite(BaseTVDBTest):
         """Test that a shows episodes are parsed as we'd expect."""
 
         show_ids = [
+            71565,
             95011,  # Modern Family
             121361,  # Game of thrones
             295759,  # Supergirl
@@ -31,114 +32,43 @@ class EpisodeTestSuite(BaseTVDBTest):
 
         self.assertIsNotNone(episode, "Failed to find episode")
 
-        # pylint: disable=line-too-long
         self.assertEqual(
             episode.identifier,
             6814868,
             f"'{episode.identifier}' was not equal to expected '6814868'",
         )
         self.assertEqual(
-            episode.aired_season,
+            episode.season_number,
             5,
-            f"'{episode.aired_season}' was not equal to expected '5'",
+            f"'{episode.season_number}' was not equal to expected '5'",
         )
         self.assertEqual(
-            episode.aired_season_id,
+            episode.seasons[0].identifier,
             777511,
-            f"'{episode.aired_season_id}' was not equal to expected '777511'",
+            f"'{episode.seasons[0].identifier}' was not equal to expected '777511'",
         )
         self.assertEqual(
-            episode.aired_episode_number,
+            episode.number,
             3,
-            f"'{episode.aired_episode_number}' was not equal to expected '3'",
+            f"'{episode.number}' was not equal to expected '3'",
         )
         self.assertEqual(
-            episode.episode_name,
+            episode.name,
             "Five, Six, Seven, Ate!",
-            f"'{episode.episode_name}' was not equal to expected 'Five, Six, Seven, Ate!'",
-        )
-        self.assertIsNone(
-            episode.first_aired, "Episode was not expected to have firsted aired data"
+            f"'{episode.name}' was not equal to expected 'Five, Six, Seven, Ate!'",
         )
         self.assertEqual(
-            episode.guest_stars,
-            [],
-            f"'{episode.guest_stars}' was not equal to expected '[]'",
+            episode.aired,
+            datetime.date(2019, 5, 16),
+            f"'{episode.aired}' was not equal to expected '{datetime.date(2019, 5, 16)}'",
         )
-        self.assertEqual(
-            episode.director,
-            "||",
-            f"'{episode.director}' was not equal to expected '||'",
-        )
-        self.assertEqual(
-            episode.directors,
-            [],
-            f"'{episode.directors}' was not equal to expected '[]'",
-        )
-        self.assertEqual(episode.writers, [], f"'{episode.writers}' was not equal to expected '[]'")
-        self.assertIsNone(episode.overview, "Episode was not expected to have overview")
-        self.assertEqual(
-            episode.language.episode_name,
-            "en",
-            f"'{episode.language.episode_name}' was not equal to expected 'en'",
-        )
-        self.assertEqual(
-            episode.language.overview,
-            "en",
-            f"'{episode.language.overview}' was not equal to expected 'en'",
-        )
-        self.assertIsNone(
-            episode.production_code, "Episode was not expected to have production code"
-        )
-        self.assertIsNone(episode.show_url, "Episode was not expected to have show url")
-        self.assertGreater(
-            episode.last_updated,
-            datetime.datetime(2018, 9, 3, 17, 17, 36),
-            f"'{episode.last_updated}' was not greater than expected last updated '{datetime.datetime(2018, 9, 3, 17, 17, 36)}'",
-        )
-        self.assertIsNone(episode.dvd_disc_id, "Episode was not expected to have DVD disc ID")
-        self.assertIsNone(episode.dvd_season, "Episode was not expected to have DVD season")
-        self.assertIsNone(
-            episode.dvd_episode_number,
-            "Episode was not expected to have DVD episode number",
-        )
-        self.assertIsNone(episode.dvd_chapter, "Episode was not expected to have DVD chapter")
-        self.assertIsNone(
-            episode.absolute_number, "Episode was not expected to have absolute number"
-        )
-        self.assertIsNone(episode.file_name, "Episode was not expected to have file name")
-        self.assertEqual(
-            episode.series_id,
-            281470,
-            f"'{episode.series_id}' was not equal to expected '281470'",
-        )
-        self.assertIsNone(
-            episode.airs_after_season,
-            "Episode was not expected to have airs after season",
-        )
-        self.assertIsNone(
-            episode.airs_before_season,
-            "Episode was not expected to have airs before season",
-        )
-        self.assertIsNone(
-            episode.airs_before_episode,
-            "Episode was not expected to have airs before episode",
-        )
-        self.assertIsNone(episode.thumb_added, "Episode was not expected to have thumb added")
-        self.assertIsNone(episode.thumb_width, "Episode was not expected to have thumb width")
-        self.assertIsNone(episode.thumb_height, "Episode was not expected to have thumb height")
-        self.assertIsNone(episode.imdb_id, "Episode was not expected to have imdb ID")
-        self.assertEqual(
-            episode.site_rating,
-            0,
-            f"'{episode.site_rating}' was not equal to expected '0'",
-        )
-        self.assertEqual(
-            episode.site_rating_count,
-            0,
-            f"'{episode.site_rating_count}' was not equal to expected '0'",
-        )
-        # pylint: enable=line-too-long
+        self.assertIsNone(episode.airs_after_season)
+        self.assertIsNone(episode.airs_before_episode)
+        self.assertIsNone(episode.airs_before_season)
+        self.assertEqual(episode.awards, [])
+        self.assertEqual(episode.is_movie, 0)
+        self.assertEqual(episode.networks[0].name, "The CW")
+        self.assertEqual(episode.runtime, 45)
 
     def test_episode_properties_2(self):
         """Test that specific episodes parse as expected."""
@@ -156,32 +86,39 @@ class EpisodeTestSuite(BaseTVDBTest):
             f"'{episode.identifier}' was not equal to expected '314260'",
         )
         self.assertEqual(
-            episode.aired_season,
+            episode.season_number,
             3,
-            f"'{episode.aired_season}' was not equal to expected '3'",
+            f"'{episode.season_number}' was not equal to expected '3'",
         )
         self.assertEqual(
-            episode.aired_season_id,
+            episode.seasons[0].identifier,
             16270,
-            f"'{episode.aired_season_id}' was not equal to expected '16270'",
+            f"'{episode.seasons[0].identifier}' was not equal to expected '16270'",
         )
         self.assertEqual(
-            episode.aired_episode_number,
+            episode.number,
             12,
-            f"'{episode.aired_episode_number}' was not equal to expected '12'",
+            f"'{episode.number}' was not equal to expected '12'",
         )
         self.assertEqual(
-            episode.episode_name,
+            episode.name,
             "Par Avion",
-            f"'{episode.episode_name}' was not equal to expected 'Par Avion'",
+            f"'{episode.name}' was not equal to expected 'Par Avion'",
         )
         self.assertEqual(
-            episode.first_aired,
+            episode.aired,
             datetime.date(2007, 3, 14),
-            f"'{episode.first_aired}' was not equal to expected '{datetime.date(2007, 3, 14)}'",
+            f"'{episode.aired}' was not equal to expected '{datetime.date(2007, 3, 14)}'",
+        )
+        guest_stars = sorted(
+            [
+                person.person_name
+                for person in episode.characters
+                if person.people_type == "Guest Star"
+            ]
         )
         self.assertEqual(
-            sorted(episode.guest_stars),
+            guest_stars,
             [
                 "Andrew Divoff",
                 "Anne Elizabeth Logan",
@@ -192,72 +129,27 @@ class EpisodeTestSuite(BaseTVDBTest):
                 "Julian Barnes",
                 "Rhett Giles",
             ],
-            f"'{episode.guest_stars}' was not equal to expected '['Andrew Divoff', 'Anne Elizabeth Logan', 'Arlene Newman-Van Asperan', 'Danan Pere', 'Gabrielle Fitzpatrick', 'John Medlen', 'Julian Barnes', 'Rhett Giles']'",
+            f"'{guest_stars}' was not equal to expected '['Andrew Divoff', 'Anne Elizabeth Logan', 'Arlene Newman-Van Asperan', 'Danan Pere', 'Gabrielle Fitzpatrick', 'John Medlen', 'Julian Barnes', 'Rhett Giles']'",
         )
+        directors = [director.person_name for director in episode.characters_by_role["Director"]]
         self.assertEqual(
-            episode.director,
-            "|Paul Edwards|",
-            f"'{episode.director}' was not equal to expected '|Paul Edwards|'",
+            directors,
+            ["Paul A. Edwards"],
         )
+        writers = sorted([writer.person_name for writer in episode.characters_by_role["Writer"]])
         self.assertEqual(
-            episode.directors,
-            ["Paul Edwards"],
-            f"'{episode.directors}' was not equal to expected '['Paul Edwards']'",
-        )
-        self.assertEqual(
-            sorted(episode.writers),
+            writers,
             ["Christina M. Kim", "Jordan Rosenberg"],
-            f"'{episode.writers}' was not equal to expected '['Christina M. Kim', 'Jordan Rosenberg']'",
+            f"'{writers}' was not equal to expected '['Christina M. Kim', 'Jordan Rosenberg']'",
         )
         self.assertEqual(
             episode.overview,
-            "Claire has an idea to send a message to the outside world. Charlie, however, is resistant to the idea, and Desmond tries to sabotage the plan. As Claire tries to get the truth behind their actions out of the pair, she remembers traumatic events from her past. Meanwhile, the rescue party encounters a dangerous obstacle.\r\n",
-            f"'{episode.overview}' was not equal to expected 'Claire has an idea to send a message to the outside world. Charlie, however, is resistant to the idea, and Desmond tries to sabotage the plan. As Claire tries to get the truth behind their actions out of the pair, she remembers traumatic events from her past. Meanwhile, the rescue party encounters a dangerous obstacle.\r\n'",
+            None,
         )
         self.assertEqual(
-            episode.language.episode_name,
-            "en",
-            f"'{episode.language.episode_name}' was not equal to expected 'en'",
-        )
-        self.assertEqual(
-            episode.language.overview,
-            "en",
-            f"'{episode.language.overview}' was not equal to expected 'en'",
-        )
-        self.assertIsNone(
-            episode.production_code, "Episode was not expected to have production code"
-        )
-        self.assertEqual(
-            episode.show_url,
-            "http://www.tv.com/episode/934480/summary.html",
-            f"'{episode.show_url}' was not equal to expected 'http://www.tv.com/episode/934480/summary.html'",
-        )
-        self.assertGreater(
-            episode.last_updated,
-            datetime.datetime(2018, 12, 28, 20, 16, 0),
-            f"'{episode.last_updated}' was not greater than expected last updated '{datetime.datetime(2018, 12, 28, 20, 16, 0)}'",
-        )
-        self.assertIsNone(episode.dvd_disc_id, "Episode was not expected to have DVD disc ID")
-        self.assertEqual(
-            episode.dvd_season,
-            3,
-            f"'{episode.dvd_season}' was not equal to expected '3'",
-        )
-        self.assertEqual(
-            episode.dvd_episode_number,
-            12,
-            f"'{episode.dvd_episode_number}' was not equal to expected '12'",
-        )
-        self.assertIsNone(episode.dvd_chapter, "Episode was not expected to have DVD chapter")
-        self.assertEqual(
-            episode.absolute_number,
-            0,
-            f"'{episode.absolute_number}' was not equal to expected '0'",
-        )
-        self.assertEqual(
-            episode.file_name,
-            "episodes/73739/314260.jpg",
-            f"'{episode.file_name}' was not equal to expected 'episodes/73739/314260.jpg'",
+            episode.image,
+            "https://artworks.thetvdb.com/banners/episodes/73739/60942d39c6dd6.jpg",
+            f"'{episode.image}' was not equal to expected 'https://artworks.thetvdb.com/banners/episodes/73739/60942d39c6dd6.jpg'",
         )
         self.assertEqual(
             episode.series_id,
@@ -276,15 +168,9 @@ class EpisodeTestSuite(BaseTVDBTest):
             episode.airs_before_episode,
             "Episode was not expected to have airs before episode",
         )
-        self.assertIsNone(episode.thumb_added, "Episode was not expected to have thumb added")
         self.assertEqual(
-            episode.imdb_id,
+            episode.remote_ids[0].identifier,
             "tt0959403",
-            f"'{episode.imdb_id}' was not equal to expected 'tt0959403'",
-        )
-        self.assertGreater(
-            episode.site_rating_count,
-            77,
-            f"'{episode.site_rating_count}' was not greater than expected '77'",
+            f"'{episode.remote_ids[0].identifier}' was not equal to expected 'tt0959403'",
         )
         # pylint: enable=line-too-long

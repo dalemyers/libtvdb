@@ -1,95 +1,111 @@
 """All the types that are used in the API."""
 
 import datetime
-from typing import List, Optional
+import json
+from typing import Any, Dict, List, Optional, Union
 
 import deserialize
 
-from libtvdb.model.enums import AirDay, ShowStatus
-from libtvdb.utilities import parse_date, parse_datetime
+from libtvdb.model import Artwork
+from libtvdb.model import Character
+from libtvdb.model import Company
+from libtvdb.model import Status, StatusName
+from libtvdb.model import RemoteID
+from libtvdb.model import SeasonBase
+from libtvdb.model import Trailer
+from libtvdb.model import date_parser, datetime_parser
 
 
-def date_parser(value: Optional[str]) -> Optional[datetime.date]:
-    """Parser method for parsing dates to pass to deserialize."""
-    if value is None:
-        return None
-
-    if value in ["", "0000-00-00"]:
-        return None
-
-    return parse_date(value)
-
-
-def datetime_parser(value: Optional[str]) -> Optional[datetime.datetime]:
-    """Parser method for parsing datetimes to pass to deserialize."""
-    if value is None:
-        return None
-
-    if value in ["", "0000-00-00 00:00:00"]:
-        return None
-
-    return parse_datetime(value)
-
-
-def timestamp_parser(value: Optional[int]) -> Optional[datetime.datetime]:
-    """Parser method for parsing datetimes to pass to deserialize."""
-    if value is None:
-        return None
-
-    return datetime.datetime.fromtimestamp(value)
-
-
-def status_parser(value: Optional[str]) -> str:
+def translated_name_parser(value: Optional[str]) -> Dict[str, str]:
     """Parser method for cleaning up statuses to pass to deserialize."""
     if value is None or value == "":
-        return ShowStatus.unknown.value
+        return {}
 
-    return value
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError:
+        return {}
+
+
+class SeriesAirsDays:
+    """Represents the days a show airs."""
+
+    monday: bool
+    tuesday: bool
+    wednesday: bool
+    thursday: bool
+    friday: bool
+    saturday: bool
+    sunday: bool
 
 
 @deserialize.key("identifier", "id")
-@deserialize.key("name", "seriesName")
-@deserialize.key("first_aired", "firstAired")
-@deserialize.key("series_identifier", "seriesId")
-@deserialize.key("network_identifier", "networkId")
-@deserialize.key("genres", "genre")
-@deserialize.key("last_updated", "lastUpdated")
-@deserialize.key("air_day", "airsDayOfWeek")
-@deserialize.key("air_time", "airsTime")
-@deserialize.key("imdb_id", "imdbId")
-@deserialize.key("zap2it_id", "zap2itId")
-@deserialize.key("added_by", "addedBy")
-@deserialize.key("site_rating", "siteRating")
-@deserialize.key("site_rating_count", "siteRatingCount")
-@deserialize.parser("status", status_parser)
-@deserialize.parser("firstAired", date_parser)
-@deserialize.parser("lastUpdated", timestamp_parser)
-@deserialize.parser("added", datetime_parser)
-class Show:
-    """Represents a single show."""
+@deserialize.auto_snake()
+class Genre:
+    """Represents a genre."""
 
     identifier: int
     name: str
     slug: str
-    status: ShowStatus
-    first_aired: Optional[datetime.date]
-    aliases: List[str]
-    network: Optional[str]
-    overview: Optional[str]
-    banner: Optional[str]
 
-    # These properties are only populated on a specific query (i.e. not a search)
-    series_identifier: Optional[str]
-    network_identifier: Optional[str]
-    runtime: Optional[str]
-    genres: Optional[List[str]]
+
+@deserialize.key("identifier", "id")
+@deserialize.key("show_type", "type")
+@deserialize.key("object_id", "objectID")
+@deserialize.key("airs_time_utc", "airsTimeUTC")
+@deserialize.parser("id", str)
+@deserialize.parser("first_aired", date_parser)
+@deserialize.parser("first_air_time", date_parser)
+@deserialize.parser("last_aired", date_parser)
+@deserialize.parser("last_updated", datetime_parser)
+@deserialize.parser("next_aired", date_parser)
+@deserialize.parser("name_translated", translated_name_parser)
+@deserialize.auto_snake()
+class Show:
+    """Represents a single show."""
+
+    abbreviation: Optional[str]
+    airs_days: Optional[SeriesAirsDays]
+    airs_time_utc: Optional[str]
+    airs_time: Optional[str]
+    aliases: Optional[List[Union[str, Dict[str, str]]]]
+    artworks: Optional[List[Artwork]]
+    average_runtime: Optional[int]
+    characters: Optional[List[Character]]
+    companies: Optional[List[Company]]
+    country: Optional[str]
+    default_season_type: Optional[int]
+    first_air_time: Optional[datetime.date]
+    first_aired: Optional[datetime.date]
+    genres: Optional[List[Genre]]
+    identifier: str
+    image: Optional[str]
+    image_url: Optional[str]
+    is_order_randomized: Optional[bool]
+    last_aired: Optional[datetime.date]
     last_updated: Optional[datetime.datetime]
-    air_day: Optional[AirDay]
-    air_time: Optional[str]
-    rating: Optional[str]
-    imdb_id: Optional[str]
-    zap2it_id: Optional[str]
-    added: Optional[datetime.datetime]
-    added_by: Optional[int]
-    site_rating: Optional[float]
-    site_rating_count: Optional[int]
+    lists: Optional[List[Dict[str, Any]]]
+    name_translated: Optional[Dict[str, str]]
+    name_translations: Optional[List[str]]  # Confirmed
+    name: str
+    network: Optional[str]
+    next_aired: Optional[datetime.date]
+    object_id: Optional[str]
+    original_country: Optional[str]
+    original_language: Optional[str]
+    overview_translated: Optional[List[str]]
+    overview_translations: Optional[List[str]]
+    overview: Optional[str]
+    overviews: Optional[Dict[str, str]]
+    primary_language: Optional[str]
+    remote_ids: Optional[List[RemoteID]]
+    score: Optional[float]
+    seasons: Optional[List[SeasonBase]]
+    show_type: Optional[str]
+    slug: str
+    status: Union[Status, StatusName]
+    thumbnail: Optional[str]
+    trailers: Optional[List[Trailer]]
+    translations: Optional[Dict[str, str]]
+    tvdb_id: Optional[str]
+    year: Optional[str]

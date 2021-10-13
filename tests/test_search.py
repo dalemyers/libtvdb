@@ -3,9 +3,8 @@
 import datetime
 
 from tests.context import BaseTVDBTest
-from tests.context import libtvdb
 
-from libtvdb.model.enums import ShowStatus
+from libtvdb.model import StatusName
 
 
 class SearchTestSuite(BaseTVDBTest):
@@ -35,25 +34,26 @@ class SearchTestSuite(BaseTVDBTest):
         """Test that shows we expect to not be there are not in fact there."""
 
         for show_name in SearchTestSuite.unexpected_shows:
-            with self.assertRaises(libtvdb.exceptions.NotFoundException):
-                _ = self.client().search_show(show_name)
+            self.assertEqual(self.client().search_show(show_name), [])
 
     def test_show_parse_result(self):
         """Test that the show values are what we'd expect."""
         shows = self.client().search_show("Better Off Ted")
         self.assertGreater(len(shows), 0, "Failed to find any matching shows")
 
-        filtered_shows = [show for show in shows if show.identifier == 84021]
+        filtered_shows = [show for show in shows if show.tvdb_id == "84021"]
         self.assertEqual(
-            1, len(filtered_shows), "There should only be a single matching show for an ID"
+            1,
+            len(filtered_shows),
+            "There should only be a single matching show for an ID",
         )
 
         show = filtered_shows[0]
 
         self.assertEqual(
-            show.identifier,
-            84021,
-            f"'{show.identifier}'' was not equal to expected identifier '84021'",
+            show.tvdb_id,
+            "84021",
+            f"'{show.tvdb_id}'' was not equal to expected identifier '84021'",
         )
         self.assertEqual(
             show.name,
@@ -67,16 +67,18 @@ class SearchTestSuite(BaseTVDBTest):
         )
         self.assertEqual(
             show.status,
-            ShowStatus.ended,
-            f"'{show.status}' was not equal to expected status '{ShowStatus.ended}'",
+            StatusName.ENDED,
+            f"'{show.status}' was not equal to expected status '{StatusName.ENDED}'",
         )
         self.assertEqual(
-            show.first_aired,
+            show.first_air_time,
             datetime.date(2009, 3, 18),
-            f"'{show.first_aired}' was not equal to expected first_aired '{datetime.date(2009, 3, 18)}'",
+            f"'{show.first_air_time}' was not equal to expected first_aired '{datetime.date(2009, 3, 18)}'",
         )
         self.assertEqual(
-            show.aliases, [], f"'{show.aliases}' was not equal to expected aliases '[]'"
+            show.aliases,
+            ["Better off Ted - Die Chaos AG", "Mejor Ted"],
+            f"'{show.aliases}' was not equal to expected aliases '['Better off Ted - Die Chaos AG', 'Mejor Ted']'",
         )
         self.assertEqual(
             show.network,
@@ -89,7 +91,7 @@ class SearchTestSuite(BaseTVDBTest):
             f"'{show.overview[:30]}' was not equal to expected overview fragment 'As the head of research and de'",
         )
         self.assertEqual(
-            show.banner,
-            "graphical/84021-g3.jpg",
-            f"'{show.banner}' was not equal to expected banner 'graphical/84021-g3.jpg'",
+            show.image_url,
+            "https://artworks.thetvdb.com/banners/posters/84021-2.jpg",
+            f"'{show.image_url}' was not equal to expected 'https://artworks.thetvdb.com/banners/posters/84021-2.jpg'",
         )

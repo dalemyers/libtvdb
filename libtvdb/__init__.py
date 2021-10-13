@@ -2,7 +2,7 @@
 """
 
 import json
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List, Optional, Union
 import urllib.parse
 
 import deserialize
@@ -13,9 +13,9 @@ from libtvdb.exceptions import (
     NotFoundException,
     TVDBAuthenticationException,
 )
-from libtvdb.model.actor import Actor
-from libtvdb.model.episode import Episode
-from libtvdb.model.show import Show
+from libtvdb.model import Actor
+from libtvdb.model import Episode
+from libtvdb.model import Show
 from libtvdb.utilities import Log
 
 
@@ -31,9 +31,9 @@ class TVDBClient:
         AUTH_TIMEOUT: ClassVar[float] = 3
         MAX_AUTH_RETRY_COUNT: ClassVar[int] = 3
 
-    _BASE_API: ClassVar[str] = "https://api.thetvdb.com"
+    _BASE_API: ClassVar[str] = "https://api4.thetvdb.com/v4"
 
-    def __init__(self, *, api_key: str, user_key: str, user_name: str) -> None:
+    def __init__(self, *, api_key: str, pin: str) -> None:
         """Create a new client wrapper.
 
         If any of the supplied parameters are None, they will be loaded from the
@@ -43,15 +43,11 @@ class TVDBClient:
         if api_key is None:
             raise Exception("No API key was supplied")
 
-        if user_key is None:
-            raise Exception("No user key was supplied")
-
-        if user_name is None:
-            raise Exception("No user name was supplied")
+        if pin is None:
+            raise Exception("No PIN was supplied")
 
         self.api_key = api_key
-        self.user_key = user_key
-        self.user_name = user_name
+        self.pin = pin
         self.auth_token = None
 
     # pylint: disable=no-self-use
@@ -96,8 +92,7 @@ class TVDBClient:
 
         login_body = {
             "apikey": self.api_key,
-            "userkey": self.user_key,
-            "username": self.user_name,
+            "pin": self.pin,
         }
 
         for i in range(0, TVDBClient.Constants.MAX_AUTH_RETRY_COUNT):
@@ -112,22 +107,22 @@ class TVDBClient:
                 # Since we authenticated successfully, we can break out of the
                 # retry loop
                 break
-            except requests.exceptions.Timeout:
+            except requests.exceptions.Timeout as ex:
                 will_retry = i < (TVDBClient.Constants.MAX_AUTH_RETRY_COUNT - 1)
                 if will_retry:
                     Log.warning("Authentication timed out, but will retry.")
                 else:
                     Log.error("Authentication timed out maximum number of times.")
-                    raise Exception("Authentication timed out maximum number of times.")
+                    raise Exception("Authentication timed out maximum number of times.") from ex
 
         if response.status_code < 200 or response.status_code >= 300:
-            Log.error(f"Authentication failed withs status code: {response.status_code}")
+            Log.error(f"Authentication failed with status code: {response.status_code}")
             raise TVDBAuthenticationException(
                 f"Authentication failed with status code: {response.status_code}"
             )
 
         content = response.json()
-        token = content.get("token")
+        token = content.get("data", {}).get("token")
 
         if token is None:
             Log.error("Failed to get token from login request")
@@ -167,7 +162,7 @@ class TVDBClient:
 
         return data
 
-    def get_paged(self, url_path: str, *, timeout: float) -> List[Any]:
+    def get_paged(self, url_path: str, *, timeout: float, key: Optional[str] = None) -> List[Any]:
         """Get paged data."""
 
         if url_path is None or url_path == "":
@@ -175,21 +170,16 @@ class TVDBClient:
 
         self.authenticate()
 
-        page = 0
+        url_path = self._expand_url(url_path)
 
         all_results: List[Any] = []
 
         while True:
 
-            if page != 0:
-                paged_url_path = f"{url_path}?page={page}"
-            else:
-                paged_url_path = url_path
-
-            Log.info(f"GET: {paged_url_path}")
+            Log.info(f"GET: {url_path}")
 
             response = requests.get(
-                self._expand_url(paged_url_path),
+                url_path,
                 headers=self._construct_headers(),
                 timeout=timeout,
             )
@@ -203,7 +193,10 @@ class TVDBClient:
             if data is None:
                 raise NotFoundException(f"Could not get data for path: {url_path}")
 
-            all_results += data
+            if key is None:
+                all_results += data
+            else:
+                all_results += data[key]
 
             links = content.get("links")
 
@@ -212,17 +205,14 @@ class TVDBClient:
 
             if links.get("next"):
                 Log.debug("Fetching next page")
-                page = links["next"]
+                url_path = links["next"]
             else:
                 break
 
         return all_results
 
     def search_show(self, show_name: str, *, timeout: float = 10.0) -> List[Show]:
-        """Search for shows matching the name supplied.
-
-        If no matching show is found, a NotFoundException will be thrown.
-        """
+        """Search for shows matching the name supplied."""
 
         if show_name is None or show_name == "":
             return []
@@ -231,12 +221,12 @@ class TVDBClient:
 
         Log.info(f"Searching for show: {show_name}")
 
-        shows_data = self.get(f"search/series?name={encoded_name}", timeout=timeout)
+        shows_data = self.get(f"search?type=series&query={encoded_name}", timeout=timeout)
 
         shows = []
 
         for show_data in shows_data:
-            show = deserialize.deserialize(Show, show_data)
+            show = deserialize.deserialize(Show, show_data, throw_on_unhandled=True)
             shows.append(show)
 
         return shows
@@ -246,39 +236,29 @@ class TVDBClient:
 
         Log.info(f"Fetching data for show: {show_identifier}")
 
-        show_data = self.get(f"series/{show_identifier}", timeout=timeout)
+        show_data = self.get(f"series/{show_identifier}/extended", timeout=timeout)
 
-        return deserialize.deserialize(Show, show_data)
+        return deserialize.deserialize(Show, show_data, throw_on_unhandled=True)
 
-    def actors_from_show_id(self, show_identifier: int, timeout: float = 10.0) -> List[Actor]:
-        """Get the actors in the given show."""
-
-        Log.info(f"Fetching actors for show id: {show_identifier}")
-
-        actor_data = self.get(f"series/{show_identifier}/actors", timeout=timeout)
-
-        actors: List[Actor] = []
-
-        for actor_data_item in actor_data:
-            actors.append(deserialize.deserialize(Actor, actor_data_item))
-
-        return actors
-
-    def actors_from_show(self, show: Show, timeout: float = 10.0) -> List[Actor]:
-        """Get the actors in the given show."""
-        return self.actors_from_show_id(show.identifier, timeout=timeout)
-
-    def episodes_from_show_id(self, show_identifier: int, timeout: float = 10.0) -> List[Episode]:
+    def episodes_from_show_id(
+        self, show_identifier: Union[int, str], timeout: float = 10.0
+    ) -> List[Episode]:
         """Get the episodes in the given show."""
 
         Log.info(f"Fetching episodes for show id: {show_identifier}")
 
-        episode_data = self.get_paged(f"series/{show_identifier}/episodes", timeout=timeout)
+        episode_data = self.get_paged(
+            f"series/{show_identifier}/episodes/default",
+            timeout=timeout,
+            key="episodes",
+        )
 
         episodes: List[Episode] = []
 
         for episode_data_item in episode_data:
-            episodes.append(deserialize.deserialize(Episode, episode_data_item))
+            episodes.append(
+                deserialize.deserialize(Episode, episode_data_item, throw_on_unhandled=True)
+            )
 
         return episodes
 
@@ -291,11 +271,9 @@ class TVDBClient:
 
         Log.info(f"Fetching info for episode id: {episode_identifier}")
 
-        episode_data = self.get(f"episodes/{episode_identifier}", timeout=timeout)
+        episode_data = self.get(f"episodes/{episode_identifier}/extended", timeout=timeout)
 
-        print(episode_data)
-
-        return deserialize.deserialize(Episode, episode_data)
+        return deserialize.deserialize(Episode, episode_data, throw_on_unhandled=True)
 
     @staticmethod
     def _check_errors(response: requests.Response) -> Any:
@@ -310,8 +288,8 @@ class TVDBClient:
         # exception type
         try:
             data = response.json()
-        except json.JSONDecodeError:
-            raise TVDBException(f"Could not decode error response: {response.text}")
+        except json.JSONDecodeError as ex:
+            raise TVDBException(f"Could not decode error response: {response.text}") from ex
 
         # Try and get the error message so we can use it
         error = data.get("Error")

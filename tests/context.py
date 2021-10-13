@@ -24,21 +24,15 @@ class BaseTVDBTest(unittest.TestCase):
         """Setup the test class."""
 
         api_key = BaseTVDBTest._read_secret("libtvdb_api_key")
-        user_key = BaseTVDBTest._read_secret("libtvdb_user_key")
-        user_name = BaseTVDBTest._read_secret("libtvdb_user_name")
+        pin = BaseTVDBTest._read_secret("libtvdb_pin")
 
         if api_key is None:
-            raise Exception("Faield to get API Key")
+            raise Exception("Failed to get API Key")
 
-        if user_key is None:
-            raise Exception("Faield to get user Key")
+        if pin is None:
+            raise Exception("Failed to get PIN")
 
-        if user_name is None:
-            raise Exception("Faield to get user name")
-
-        BaseTVDBTest._client = libtvdb.TVDBClient(
-            api_key=api_key, user_key=user_key, user_name=user_name
-        )
+        BaseTVDBTest._client = libtvdb.TVDBClient(api_key=api_key, pin=pin)
 
     @classmethod
     def _read_secret(cls, secret_name):
