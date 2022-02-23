@@ -54,6 +54,7 @@ class Episode:
     production_code: Optional[str]
     remote_ids: Optional[List[RemoteID]]
     runtime: Optional[int]
+    season_name: Optional[str]
     season_number: int
     seasons: Optional[List[SeasonBase]]
     series_id: int
