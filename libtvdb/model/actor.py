@@ -1,7 +1,6 @@
 """All the types that are used in the API."""
 
 import datetime
-from typing import Optional
 
 import deserialize
 
@@ -26,8 +25,8 @@ class Actor:
     sort_order: int
     image: str
     image_author: int
-    image_added: Optional[datetime.datetime]
-    last_updated: Optional[datetime.datetime]
+    image_added: datetime.datetime | None
+    last_updated: datetime.datetime | None
 
     def __str__(self):
         return f"{self.name} ({self.role}, {self.identifier})"

@@ -15,3 +15,9 @@ pip-selfcheck.json
 pyvenv.cfg
 libtvdb.egg-info/
 Scripts/
+.env
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/

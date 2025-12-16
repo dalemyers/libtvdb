@@ -22,7 +22,8 @@ def parse_date(input_string: str) -> datetime.date:
             _ = int(component)
         except ValueError as ex:
             raise ValueError(
-                "The input string should be of the format YYYY-MM-DD, where each date component is an integer."
+                "The input string should be of the format YYYY-MM-DD, "
+                "where each date component is an integer."
             ) from ex
 
     year = int(components[0])
@@ -33,7 +34,7 @@ def parse_date(input_string: str) -> datetime.date:
 
 
 def parse_datetime(input_string: str) -> datetime.datetime:
-    """Parse a datetime string from the API in 'YYYY-MM-DD HH:MM:SS' format into a datetime object."""
+    """Parse a datetime string from the API in 'YYYY-MM-DD HH:MM:SS' format."""
 
     if input_string is None:
         raise ValueError("The input string should not be none.")

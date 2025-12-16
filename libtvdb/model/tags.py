@@ -1,7 +1,5 @@
 """All the types that are used in the API."""
 
-from typing import Optional
-
 import deserialize
 
 
@@ -10,7 +8,7 @@ import deserialize
 class TagOption:
     """Represents a Tag Option."""
 
-    help_text: Optional[str]
+    help_text: str | None
     identifier: int
     name: str
     tag: int

@@ -1,12 +1,11 @@
 """All the types that are used in the API."""
 
 import datetime
-from typing import Optional
 
 from libtvdb.utilities import parse_date, parse_datetime
 
 
-def date_parser(value: Optional[str]) -> Optional[datetime.date]:
+def date_parser(value: str | None) -> datetime.date | None:
     """Parser method for parsing dates to pass to deserialize."""
     if value is None:
         return None
@@ -17,7 +16,7 @@ def date_parser(value: Optional[str]) -> Optional[datetime.date]:
     return parse_date(value)
 
 
-def datetime_parser(value: Optional[str]) -> Optional[datetime.datetime]:
+def datetime_parser(value: str | None) -> datetime.datetime | None:
     """Parser method for parsing datetimes to pass to deserialize."""
     if value is None:
         return None
@@ -28,7 +27,7 @@ def datetime_parser(value: Optional[str]) -> Optional[datetime.datetime]:
     return parse_datetime(value)
 
 
-def timestamp_parser(value: Optional[int]) -> Optional[datetime.datetime]:
+def timestamp_parser(value: int | None) -> datetime.datetime | None:
     """Parser method for parsing datetimes to pass to deserialize."""
     if value is None:
         return None
@@ -36,7 +35,7 @@ def timestamp_parser(value: Optional[int]) -> Optional[datetime.datetime]:
     return datetime.datetime.fromtimestamp(value)
 
 
-def optional_float(value: Optional[int]) -> Optional[float]:
+def optional_float(value: int | None) -> float | None:
     """Parser for optional ints to floats."""
     if value is None:
         return None
@@ -44,7 +43,7 @@ def optional_float(value: Optional[int]) -> Optional[float]:
     return float(value)
 
 
-def optional_empty_str(value: Optional[str]) -> Optional[str]:
+def optional_empty_str(value: str | None) -> str | None:
     """Parser for empty strs to None."""
     if value is None:
         return None

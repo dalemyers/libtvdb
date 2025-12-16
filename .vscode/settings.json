@@ -3,16 +3,32 @@
         "**/.mypy_cache": true,
         "**/.pytest_cache": true,
         ".cache/": true,
-        "bin/": true,
-        "include/": true,
-        "junit/": true,
-        "lib/": true,
-        "Scripts/": true,
-        "Lib/": true,
-        "Include/": true,
         "*.egg-info/": true,
+        ".venv/": true,
+        "**/__pycache__": true,
+        ".ruff_cache/": true
     },
-    "python.pythonPath": ".venv/bin/python",
-    "python.formatting.provider": "black",
-    "python.testing.pytestEnabled": true
+    "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintPath": ".venv/Scripts/pylint.exe",
+    "python.linting.mypyEnabled": true,
+    "python.linting.mypyPath": ".venv/Scripts/mypy.exe",
+    "ruff.enable": true,
+    "ruff.organizeImports": true,
+    "ruff.fixAll": true
 }

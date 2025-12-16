@@ -1,12 +1,11 @@
 """All the types that are used in the API."""
 
 import datetime
-from typing import List, Optional
 
 import deserialize
 
-from libtvdb.model.parsers import date_parser
 from libtvdb.model.company import CompanyType
+from libtvdb.model.parsers import date_parser
 
 
 @deserialize.key("identifier", "id")
@@ -16,17 +15,17 @@ from libtvdb.model.company import CompanyType
 class NetworkBase:
     """Represents a network."""
 
-    abbreviation: Optional[str]
-    active_date: Optional[datetime.date]
-    aliases: Optional[List[str]]
+    abbreviation: str | None
+    active_date: datetime.date | None
+    aliases: list[str] | None
     company_type: CompanyType
     country: str
     identifier: int
-    inactive_date: Optional[datetime.date]
+    inactive_date: datetime.date | None
     name: str
-    name_translations: Optional[List[str]]
-    overview: Optional[str]
-    overview_translations: Optional[List[str]]
+    name_translations: list[str] | None
+    overview: str | None
+    overview_translations: list[str] | None
     primary_company_type: int
     slug: str
 

@@ -1,16 +1,16 @@
 """All the types that are used in the API."""
 
-from collections import defaultdict
 import datetime
-from typing import Any, Dict, List, Optional
+from collections import defaultdict
+from typing import Any
 
 import deserialize
 
-from libtvdb.model.parsers import date_parser, datetime_parser
 from libtvdb.model.award import AwardBase
 from libtvdb.model.character import Character
 from libtvdb.model.content_rating import ContentRating
 from libtvdb.model.network import NetworkBase
+from libtvdb.model.parsers import date_parser, datetime_parser
 from libtvdb.model.remote_id import RemoteID
 from libtvdb.model.season import SeasonBase
 from libtvdb.model.tags import TagOption
@@ -21,6 +21,7 @@ from libtvdb.model.trailer import Trailer
 @deserialize.key("identifier", "id")
 @deserialize.parser("aired", date_parser)
 @deserialize.parser("last_updated", datetime_parser)
+@deserialize.parser("year", lambda x: int(x) if x else None)
 class Episode:
     """Represents an episode of a show."""
 
@@ -31,44 +32,47 @@ class Episode:
         episode_name: str
         overview: str
 
-    aired: Optional[datetime.date]
-    airs_after_season: Optional[int]
-    airs_before_episode: Optional[int]
-    airs_before_season: Optional[int]
-    awards: Optional[List[AwardBase]]
-    characters: Optional[List[Character]]
-    content_ratings: Optional[List[ContentRating]]
-    finale_type: Optional[Any]
+    absolute_number: int | None
+    aired: datetime.date | None
+    airs_after_season: int | None
+    airs_before_episode: int | None
+    airs_before_season: int | None
+    awards: list[AwardBase] | None
+    characters: list[Character] | None
+    companies: list[Any] | None
+    content_ratings: list[ContentRating] | None
+    finale_type: Any | None
     identifier: int
-    image: Optional[str]
-    image_type: Optional[int]
+    image: str | None
+    image_type: int | None
     is_movie: int  # ?
     last_updated: datetime.datetime
     name: str
-    name_translations: Optional[List[str]]
-    networks: Optional[List[NetworkBase]]
-    nominations: Optional[Any]
+    name_translations: list[str] | None
+    networks: list[NetworkBase] | None
+    nominations: Any | None
     number: int
-    overview: Optional[str]
-    overview_translations: Optional[List[str]]
-    production_code: Optional[str]
-    remote_ids: Optional[List[RemoteID]]
-    runtime: Optional[int]
-    season_name: Optional[str]
+    overview: str | None
+    overview_translations: list[str] | None
+    production_code: str | None
+    remote_ids: list[RemoteID] | None
+    runtime: int | None
+    season_name: str | None
     season_number: int
-    seasons: Optional[List[SeasonBase]]
+    seasons: list[SeasonBase] | None
     series_id: int
-    studios: Optional[List[Any]]
-    tag_options: Optional[List[TagOption]]
-    trailers: Optional[List[Trailer]]
+    studios: list[Any] | None
+    tag_options: list[TagOption] | None
+    trailers: list[Trailer] | None
+    year: int | None
 
     @property
-    def characters_by_role(self) -> Dict[str, List[Character]]:
+    def characters_by_role(self) -> dict[str, list[Character]]:
         """Get all characters keyed by their role.
 
         :returns: A dict mapping roles to characters
         """
-        output: Dict[str, List[Character]] = defaultdict(list)
+        output: dict[str, list[Character]] = defaultdict(list)
 
         if self.characters is None:
             return output

@@ -2,10 +2,18 @@
 
 import sys
 import os
-from typing import ClassVar, Optional
+from typing import ClassVar
 import unittest
 
-import keyper
+import dotenv
+
+try:
+    import keyper
+except:
+    import dotenv
+
+    dotenv.load_dotenv()
+
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 # pylint: disable=wrong-import-position
@@ -17,7 +25,7 @@ import libtvdb
 class BaseTVDBTest(unittest.TestCase):
     """Base class for TVDB test cases."""
 
-    _client: ClassVar[Optional[libtvdb.TVDBClient]] = None
+    _client: ClassVar[libtvdb.TVDBClient | None] = None
 
     @classmethod
     def setUpClass(cls):
@@ -36,6 +44,9 @@ class BaseTVDBTest(unittest.TestCase):
 
     @classmethod
     def _read_secret(cls, secret_name):
+        if secret := os.environ.get(secret_name):
+            return secret
+
         keychain_value = keyper.get_password(label=secret_name.lower())
 
         if keychain_value is not None:

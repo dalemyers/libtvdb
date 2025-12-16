@@ -2,20 +2,18 @@
 """
 
 import json
-from typing import Any, ClassVar, Dict, List, Optional, Union
 import urllib.parse
+from typing import Any, ClassVar
 
 import deserialize
 import requests
 
 from libtvdb.exceptions import (
-    TVDBException,
     NotFoundException,
     TVDBAuthenticationException,
+    TVDBException,
 )
-from libtvdb.model import Actor
-from libtvdb.model import Episode
-from libtvdb.model import Show
+from libtvdb.model import Episode, Show
 from libtvdb.utilities import Log
 
 
@@ -50,16 +48,12 @@ class TVDBClient:
         self.pin = pin
         self.auth_token = None
 
-    # pylint: disable=no-self-use
     def _expand_url(self, path: str) -> str:
         """Take the path from a URL and expand it to the full API path."""
         return f"{TVDBClient._BASE_API}/{path}"
 
-    # pylint: enable=no-self-use
-
-    # pylint: disable=no-self-use
-    def _construct_headers(self, *, additional_headers: Optional[Any] = None) -> Dict[str, str]:
-        """Construct the headers used for all requests, inserting any additional headers as required."""
+    def _construct_headers(self, *, additional_headers: Any | None = None) -> dict[str, str]:
+        """Construct the headers used for all requests."""
 
         headers = {"Accept": "application/json"}
 
@@ -73,8 +67,6 @@ class TVDBClient:
             headers[header_name] = header_value
 
         return headers
-
-    # pylint: enable=no-self-use
 
     def authenticate(self):
         """Authenticate the client with the API.
@@ -95,7 +87,7 @@ class TVDBClient:
             "pin": self.pin,
         }
 
-        for i in range(0, TVDBClient.Constants.MAX_AUTH_RETRY_COUNT):
+        for i in range(TVDBClient.Constants.MAX_AUTH_RETRY_COUNT):
             try:
                 response = requests.post(
                     self._expand_url("login"),
@@ -162,7 +154,7 @@ class TVDBClient:
 
         return data
 
-    def get_paged(self, url_path: str, *, timeout: float, key: Optional[str] = None) -> List[Any]:
+    def get_paged(self, url_path: str, *, timeout: float, key: str | None = None) -> list[Any]:
         """Get paged data."""
 
         if url_path is None or url_path == "":
@@ -172,7 +164,7 @@ class TVDBClient:
 
         url_path = self._expand_url(url_path)
 
-        all_results: List[Any] = []
+        all_results: list[Any] = []
 
         while True:
 
@@ -211,7 +203,7 @@ class TVDBClient:
 
         return all_results
 
-    def search_show(self, show_name: str, *, timeout: float = 10.0) -> List[Show]:
+    def search_show(self, show_name: str, *, timeout: float = 10.0) -> list[Show]:
         """Search for shows matching the name supplied."""
 
         if show_name is None or show_name == "":
@@ -231,7 +223,7 @@ class TVDBClient:
 
         return shows
 
-    def show_info(self, show_identifier: int, *, timeout: float = 10.0) -> Optional[Show]:
+    def show_info(self, show_identifier: int, *, timeout: float = 10.0) -> Show | None:
         """Get the full information for the show with the given identifier."""
 
         Log.info(f"Fetching data for show: {show_identifier}")
@@ -241,8 +233,8 @@ class TVDBClient:
         return deserialize.deserialize(Show, show_data, throw_on_unhandled=True)
 
     def episodes_from_show_id(
-        self, show_identifier: Union[int, str], timeout: float = 10.0
-    ) -> List[Episode]:
+        self, show_identifier: int | str, timeout: float = 10.0
+    ) -> list[Episode]:
         """Get the episodes in the given show."""
 
         Log.info(f"Fetching episodes for show id: {show_identifier}")
@@ -253,7 +245,7 @@ class TVDBClient:
             key="episodes",
         )
 
-        episodes: List[Episode] = []
+        episodes: list[Episode] = []
 
         for episode_data_item in episode_data:
             episodes.append(
@@ -262,7 +254,7 @@ class TVDBClient:
 
         return episodes
 
-    def episodes_from_show(self, show: Show, timeout: float = 10.0) -> List[Episode]:
+    def episodes_from_show(self, show: Show, timeout: float = 10.0) -> list[Episode]:
         """Get the episodes in the given show."""
         return self.episodes_from_show_id(show.identifier, timeout=timeout)
 

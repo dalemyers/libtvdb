@@ -1,6 +1,7 @@
 """All the types that are used in the API."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 import deserialize
 
 
@@ -13,6 +14,7 @@ class SeasonType:
     identifier: int
     name: str
     season_type: str
+    alternate_name: str | None
 
 
 @deserialize.key("identifier", "id")
@@ -21,18 +23,19 @@ class SeasonType:
 class SeasonBase:
     """Represents a Season of a show."""
 
-    abbreviation: Optional[str]
-    companies: Optional[Dict[str, Any]]
-    country: Optional[str]
+    abbreviation: str | None
+    companies: dict[str, Any] | None
+    country: str | None
     identifier: int
-    image: Optional[str]
-    image_type: Optional[int]
-    name: Optional[str]
-    name_translations: Optional[List[str]]
+    image: str | None
+    image_type: int | None
+    last_updated: str | None
+    name: str | None
+    name_translations: list[str] | None
     number: int
-    overview_translations: Optional[List[str]]
+    overview_translations: list[str] | None
     series_id: int
-    slug: Optional[str]
+    slug: str | None
     season_type: SeasonType
 
     def __str__(self):

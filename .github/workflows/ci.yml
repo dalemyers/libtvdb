@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    
+    - name: Install dependencies
+      run: |
+        poetry install
+    
+    - name: Run Ruff
+      run: poetry run ruff check libtvdb
+    
+    - name: Check Black formatting
+      run: poetry run black --check libtvdb tests
+    
+    - name: Run Pylint
+      run: poetry run pylint --rcfile=pylintrc libtvdb
+    
+    - name: Run mypy
+      run: poetry run mypy libtvdb/
+    
+    - name: Run pyright
+      run: poetry run pyright libtvdb
+    
+    - name: Run tests
+      run: poetry run pytest tests
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false

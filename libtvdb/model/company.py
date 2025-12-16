@@ -1,7 +1,7 @@
 """All the types that are used in the API."""
 
 import datetime
-from typing import List, Optional
+from typing import Any
 
 import deserialize
 
@@ -29,17 +29,19 @@ class CompanyType:
 class Company:
     """Represents a company."""
 
-    active_date: Optional[datetime.date]
-    inactive_date: Optional[datetime.date]
-    aliases: Optional[List[Alias]]
-    country: Optional[str]
+    aliases: list[Alias] | None
+    active_date: datetime.date | None
+    inactive_date: datetime.date | None
+    country: str | None
     identifier: int
     name: str
-    name_translations: Optional[List[str]]
-    overview_translations: Optional[List[str]]
-    primary_company_type: Optional[int]
+    name_translations: list[str] | None
+    overview_translations: list[str] | None
+    parent_company: dict[str, Any] | None
+    primary_company_type: int | None
     company_type: CompanyType
     slug: str
+    tag_options: Any | None
 
     def __str__(self):
         return f"Company<{self.identifier} - {self.name}>"

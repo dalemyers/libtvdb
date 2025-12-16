@@ -2,27 +2,28 @@
 
 import datetime
 import json
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import deserialize
 
 from libtvdb.model.artwork import Artwork
 from libtvdb.model.character import Character
 from libtvdb.model.company import Company
-from libtvdb.model.status import Status, StatusName
+from libtvdb.model.parsers import date_parser, datetime_parser, optional_float
 from libtvdb.model.remote_id import RemoteID
 from libtvdb.model.season import SeasonBase
+from libtvdb.model.status import Status, StatusName
 from libtvdb.model.trailer import Trailer
-from libtvdb.model.parsers import date_parser, datetime_parser
 
 
-def translated_name_parser(value: Optional[str]) -> Dict[str, str]:
+def translated_name_parser(value: str | None) -> dict[str, str]:
     """Parser method for cleaning up statuses to pass to deserialize."""
     if value is None or value == "":
         return {}
 
     try:
-        return json.loads(value)
+        result = json.loads(value)
+        return result if isinstance(result, dict) else {}
     except json.JSONDecodeError:
         return {}
 
@@ -60,53 +61,60 @@ class Genre:
 @deserialize.parser("last_updated", datetime_parser)
 @deserialize.parser("next_aired", date_parser)
 @deserialize.parser("name_translated", translated_name_parser)
-@deserialize.parser("score", float)
+@deserialize.parser("score", optional_float)
 @deserialize.auto_snake()
 class Show:
     """Represents a single show."""
 
-    abbreviation: Optional[str]
-    airs_days: Optional[SeriesAirsDays]
-    airs_time_utc: Optional[str]
-    airs_time: Optional[str]
-    aliases: Optional[List[Union[str, Dict[str, str]]]]
-    artworks: Optional[List[Artwork]]
-    average_runtime: Optional[int]
-    characters: Optional[List[Character]]
-    companies: Optional[List[Company]]
-    country: Optional[str]
-    default_season_type: Optional[int]
-    first_air_time: Optional[datetime.date]
-    first_aired: Optional[datetime.date]
-    genres: Optional[List[Genre]]
+    abbreviation: str | None
+    airs_days: SeriesAirsDays | None
+    airs_time_utc: str | None
+    airs_time: str | None
+    aliases: list[str | dict[str, str]] | None
+    artworks: list[Artwork] | None
+    average_runtime: int | None
+    characters: list[Character] | None
+    companies: list[Company] | None
+    content_ratings: list[Any] | None
+    country: str | None
+    default_season_type: int | None
+    episodes: list[Any] | None
+    first_air_time: datetime.date | None
+    first_aired: datetime.date | None
+    genres: list[Genre] | None
     identifier: str
-    image: Optional[str]
-    image_url: Optional[str]
-    is_order_randomized: Optional[bool]
-    last_aired: Optional[datetime.date]
-    last_updated: Optional[datetime.datetime]
-    lists: Optional[List[Dict[str, Any]]]
-    name_translated: Optional[Dict[str, str]]
-    name_translations: Optional[List[str]]  # Confirmed
+    image: str | None
+    image_url: str | None
+    is_order_randomized: bool | None
+    last_aired: datetime.date | None
+    last_updated: datetime.datetime | None
+    latest_network: Company | None
+    lists: list[dict[str, Any]] | None
+    name_translated: dict[str, str] | None
+    name_translations: list[str] | None  # Confirmed
     name: str
-    network: Optional[str]
-    next_aired: Optional[datetime.date]
-    object_id: Optional[str]
-    original_country: Optional[str]
-    original_language: Optional[str]
-    overview_translated: Optional[List[str]]
-    overview_translations: Optional[List[str]]
-    overview: Optional[str]
-    overviews: Optional[Dict[str, str]]
-    primary_language: Optional[str]
-    remote_ids: Optional[List[RemoteID]]
-    score: Optional[float]
-    seasons: Optional[List[SeasonBase]]
-    show_type: Optional[str]
+    network: str | None
+    next_aired: datetime.date | None
+    object_id: str | None
+    original_country: str | None
+    original_language: str | None
+    original_network: Company | None
+    overview_translated: list[str] | None
+    overview_translations: list[str] | None
+    overview: str | None
+    overviews: dict[str, str] | None
+    primary_language: str | None
+    primary_type: str | None
+    remote_ids: list[RemoteID] | None
+    score: float | None
+    season_types: list[Any] | None
+    seasons: list[SeasonBase] | None
+    show_type: str | None
     slug: str
-    status: Union[Status, StatusName]
-    thumbnail: Optional[str]
-    trailers: Optional[List[Trailer]]
-    translations: Optional[Dict[str, str]]
-    tvdb_id: Optional[str]
-    year: Optional[str]
+    status: Status | StatusName
+    tags: list[Any] | None
+    thumbnail: str | None
+    trailers: list[Trailer] | None
+    translations: dict[str, str] | None
+    tvdb_id: str | None
+    year: str | None

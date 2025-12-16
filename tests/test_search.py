@@ -75,10 +75,11 @@ class SearchTestSuite(BaseTVDBTest):
             datetime.date(2009, 3, 18),
             f"'{show.first_air_time}' was not equal to expected first_aired '{datetime.date(2009, 3, 18)}'",
         )
+        # API now returns additional Russian alias
         self.assertEqual(
             show.aliases,
-            ["Better off Ted - Die Chaos AG", "Mejor Ted"],
-            f"'{show.aliases}' was not equal to expected aliases '['Better off Ted - Die Chaos AG', 'Mejor Ted']'",
+            ["Better off Ted - Die Chaos AG", "Везунчик Тэд", "Mejor Ted"],
+            f"'{show.aliases}' was not equal to expected aliases '['Better off Ted - Die Chaos AG', 'Везунчик Тэд', 'Mejor Ted']'",
         )
         self.assertEqual(
             show.network,

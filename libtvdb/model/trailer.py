@@ -12,6 +12,7 @@ class Trailer:
     language: str
     name: str
     url: str
+    runtime: int | None
 
     def __str__(self):
         return f"Trailer<{self.identifier} - {self.name}>"

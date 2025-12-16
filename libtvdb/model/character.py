@@ -1,6 +1,6 @@
 """All the types that are used in the API."""
 
-from typing import List, Optional
+from typing import Any
 
 import deserialize
 
@@ -12,27 +12,32 @@ from libtvdb.model.parsers import (
 
 @deserialize.key("identifier", "id")
 @deserialize.key("character_type", "type")
+@deserialize.key("person_img_url", "personImgURL")
 @deserialize.parser("url", optional_empty_str)
 @deserialize.auto_snake()
 class Character:
     """Represents a character of a show."""
 
-    aliases: Optional[List[Alias]]
-    character_type: Optional[int]
-    episode_id: Optional[int]
+    aliases: list[Alias] | None
+    character_type: int | None
+    episode_id: int | None
     identifier: int
-    image: Optional[str]
+    image: str | None
     is_featured: bool
-    movie_id: Optional[int]
-    name: Optional[str]
-    name_translations: Optional[List[str]]
-    overview_translations: Optional[List[str]]
+    movie: int | None
+    movie_id: int | None
+    name: str | None
+    name_translations: list[str] | None
+    overview_translations: list[str] | None
     people_id: int
-    people_type: Optional[str]
+    people_type: str | None
+    series: int | None
     series_id: int
     sort: int
-    url: Optional[str]
+    url: str | None
     person_name: str
+    person_img_url: str | None
+    tag_options: Any | None
 
     def __str__(self):
         return f"Character<{self.identifier} - {self.name}>"
