@@ -23,14 +23,13 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries"
 ]
 
 [tool.poetry.dependencies]
 python = "^3.11"
 deserialize = "^2.1.0"
-requests = "^2.32.0"
+requests = "^2.32.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.12.0"
