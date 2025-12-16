@@ -173,3 +173,14 @@ class EpisodeTestSuite(BaseTVDBTest):
             f"'{episode.remote_ids[0].identifier}' was not equal to expected 'tt0959403'",
         )
         # pylint: enable=line-too-long
+
+    def test_episodes_from_show(self):
+        """Test episodes_from_show wrapper method."""
+        shows = self.client().search_show("Doctor Who")
+        self.assertGreater(len(shows), 0, "Failed to find any matching shows")
+
+        # Use first show from results
+        show = shows[0]
+        episodes = self.client().episodes_from_show(show)
+
+        self.assertGreater(len(episodes), 0, "Show should have episodes")

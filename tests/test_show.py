@@ -3,7 +3,6 @@
 import datetime
 
 from libtvdb.model import StatusName
-
 from tests.context import BaseTVDBTest
 
 

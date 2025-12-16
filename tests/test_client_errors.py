@@ -1,11 +1,12 @@
 """Tests for client error handling and edge cases."""
 
 from unittest.mock import Mock, patch
-import requests
+
 import pytest
+import requests
 
 from libtvdb import TVDBClient
-from libtvdb.exceptions import TVDBAuthenticationException, NotFoundException, TVDBException
+from libtvdb.exceptions import NotFoundException, TVDBAuthenticationException, TVDBException
 from libtvdb.utilities import Log
 
 
@@ -197,3 +198,81 @@ def test_log_methods():
         mock_print.assert_any_call("DEBUG: debug message")
         mock_print.assert_any_call("WARNING: warning message")
         mock_print.assert_any_call("ERROR: error message")
+
+
+def test_get_invalid_url_path_none():
+    """Test get method with None URL path."""
+    client = TVDBClient(api_key="test_key", pin="test_pin")
+    client.auth_token = "test_token"
+
+    with pytest.raises(AttributeError, match="invalid URL path"):
+        client.get(None, timeout=10)
+
+
+def test_get_invalid_url_path_empty():
+    """Test get method with empty URL path."""
+    client = TVDBClient(api_key="test_key", pin="test_pin")
+    client.auth_token = "test_token"
+
+    with pytest.raises(AttributeError, match="invalid URL path"):
+        client.get("", timeout=10)
+
+
+def test_get_paged_invalid_url_path_none():
+    """Test get_paged method with None URL path."""
+    client = TVDBClient(api_key="test_key", pin="test_pin")
+    client.auth_token = "test_token"
+
+    with pytest.raises(AttributeError, match="invalid URL path"):
+        client.get_paged(None, timeout=10)
+
+
+def test_get_paged_invalid_url_path_empty():
+    """Test get_paged method with empty URL path."""
+    client = TVDBClient(api_key="test_key", pin="test_pin")
+    client.auth_token = "test_token"
+
+    with pytest.raises(AttributeError, match="invalid URL path"):
+        client.get_paged("", timeout=10)
+
+
+@patch("requests.get")
+def test_get_paged_no_data(mock_get):
+    """Test get_paged method when data is None."""
+    client = TVDBClient(api_key="test_key", pin="test_pin")
+    client.auth_token = "test_token"
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"data": None}
+    mock_get.return_value = mock_response
+
+    with pytest.raises(NotFoundException, match="Could not get data"):
+        client.get_paged("/test", timeout=10)
+
+
+def test_episodes_from_show_no_tvdb_id():
+    """Test episodes_from_show with None tvdb_id."""
+    from libtvdb.model import Show
+
+    client = TVDBClient(api_key="test_key", pin="test_pin")
+    client.auth_token = "test_token"
+    show = Show()
+    show.tvdb_id = None
+
+    with pytest.raises(ValueError, match="must have a tvdb_id"):
+        client.episodes_from_show(show)
+
+
+@patch("requests.get")
+def test_get_paged_no_links(mock_get):
+    """Test get_paged method with no pagination links."""
+    client = TVDBClient(api_key="test_key", pin="test_pin")
+    client.auth_token = "test_token"
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"data": [{"id": 1}], "links": None}
+    mock_get.return_value = mock_response
+
+    result = client.get_paged("/test", timeout=10)
+    assert len(result) == 1
+    assert result[0]["id"] == 1

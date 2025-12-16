@@ -1,9 +1,9 @@
 """Shared context information for all tests."""
 
-import sys
 import os
-from typing import ClassVar
+import sys
 import unittest
+from typing import ClassVar
 
 import dotenv
 

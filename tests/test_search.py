@@ -2,9 +2,8 @@
 
 import datetime
 
-from tests.context import BaseTVDBTest
-
 from libtvdb.model import StatusName
+from tests.context import BaseTVDBTest
 
 
 class SearchTestSuite(BaseTVDBTest):
@@ -96,3 +95,11 @@ class SearchTestSuite(BaseTVDBTest):
             "https://artworks.thetvdb.com/banners/posters/84021-2.jpg",
             f"'{show.image_url}' was not equal to expected 'https://artworks.thetvdb.com/banners/posters/84021-2.jpg'",
         )
+
+    def test_search_show_empty_string(self):
+        """Test that searching with empty string returns empty list."""
+        self.assertEqual(self.client().search_show(""), [])
+
+    def test_search_show_none(self):
+        """Test that searching with None returns empty list."""
+        self.assertEqual(self.client().search_show(None), [])

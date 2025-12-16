@@ -16,9 +16,9 @@ from libtvdb.model import (
     TagOption,
     Trailer,
 )
+from libtvdb.model.award import AwardBase
 from libtvdb.model.company import CompanyType
 from libtvdb.model.season import SeasonType
-from libtvdb.model.award import AwardBase
 from libtvdb.model.status import Status, StatusName
 
 

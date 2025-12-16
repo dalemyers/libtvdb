@@ -255,7 +255,9 @@ class TVDBClient:
 
     def episodes_from_show(self, show: Show, timeout: float = 10.0) -> list[Episode]:
         """Get the episodes in the given show."""
-        return self.episodes_from_show_id(show.identifier, timeout=timeout)
+        if show.tvdb_id is None:
+            raise ValueError("Show must have a tvdb_id")
+        return self.episodes_from_show_id(show.tvdb_id, timeout=timeout)
 
     def episode_by_id(self, episode_identifier: int, timeout: float = 10.0) -> Episode:
         """Get the episode information from its ID."""

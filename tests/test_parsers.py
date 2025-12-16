@@ -1,17 +1,18 @@
 """Tests for parser functions and edge cases."""
 
 import datetime
+
 import pytest
 
-from libtvdb.utilities import parse_date, parse_datetime
 from libtvdb.model.parsers import (
     date_parser,
     datetime_parser,
-    timestamp_parser,
-    optional_float,
     optional_empty_str,
+    optional_float,
+    timestamp_parser,
 )
 from libtvdb.model.show import translated_name_parser
+from libtvdb.utilities import parse_date, parse_datetime
 
 
 def test_parse_datetime_none():
