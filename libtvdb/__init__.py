@@ -1,5 +1,4 @@
-"""libtvdb is a wrapper around the TVDB API (https://api.thetvdb.com/swagger).
-"""
+"""libtvdb is a wrapper around the TVDB API (https://api.thetvdb.com/swagger)."""
 
 import json
 import urllib.parse

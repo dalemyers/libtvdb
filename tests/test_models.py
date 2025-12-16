@@ -3,8 +3,18 @@
 import datetime
 
 from libtvdb.model import (
-    Actor, Alias, Artwork, Character, Company, ContentRating,
-    Episode, NetworkBase, RemoteID, SeasonBase, TagOption, Trailer
+    Actor,
+    Alias,
+    Artwork,
+    Character,
+    Company,
+    ContentRating,
+    Episode,
+    NetworkBase,
+    RemoteID,
+    SeasonBase,
+    TagOption,
+    Trailer,
 )
 from libtvdb.model.company import CompanyType
 from libtvdb.model.season import SeasonType
@@ -58,7 +68,7 @@ def test_company_str():
     company_type = CompanyType()
     company_type.company_type_id = 1
     company_type.company_type_name = "Network"
-    
+
     company = Company()
     company.identifier = 1
     company.name = "Test Company"
@@ -97,7 +107,7 @@ def test_season_str():
     season_type.identifier = 1
     season_type.name = "Regular"
     season_type.season_type = "official"
-    
+
     season = SeasonBase()
     season.identifier = 1
     season.name = "Season 1"
@@ -153,7 +163,7 @@ def test_episode_characters_by_role_none():
     episode.is_movie = 0
     episode.last_updated = datetime.datetime.now()
     episode.characters = None
-    
+
     result = episode.characters_by_role
     assert len(result) == 0
 
@@ -168,7 +178,7 @@ def test_episode_characters_by_role_with_unknown():
     episode.series_id = 123
     episode.is_movie = 0
     episode.last_updated = datetime.datetime.now()
-    
+
     char = Character()
     char.identifier = 1
     char.name = "Test Character"
@@ -177,9 +187,9 @@ def test_episode_characters_by_role_with_unknown():
     char.series_id = 123
     char.sort = 1
     char.is_featured = True
-    
+
     episode.characters = [char]
-    
+
     result = episode.characters_by_role
     assert "Unknown" in result
     assert len(result["Unknown"]) == 1
@@ -195,6 +205,6 @@ def test_episode_str():
     episode.series_id = 123
     episode.is_movie = 0
     episode.last_updated = datetime.datetime.now()
-    
+
     result = str(episode)
     assert "Test Episode" in result

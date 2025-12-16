@@ -148,5 +148,3 @@ class ShowTestSuite(BaseTVDBTest):
         # API now returns overview data
         self.assertIsNotNone(show.overview)
         # pylint: enable=line-too-long
-
-

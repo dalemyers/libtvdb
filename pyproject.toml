@@ -23,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries"
 ]
 
@@ -32,15 +33,15 @@ deserialize = "^2.1.0"
 requests = "^2.32.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.10.0"
+black = "^25.12.0"
 keyper = "^1.1.0"
 mypy = "^1.13.0"
-pylint = "^3.3.0"
-pytest = "^8.3.0"
-pytest-cov = "^6.0.0"
+pylint = "^4.0.4"
+pytest = "^9.0.2"
+pytest-cov = "^7.0.0"
 python-dotenv = "^1.0.1"
 types-requests = "^2.32.0"
-ruff = "^0.8.0"
+ruff = "^0.14.9"
 pyright = "^1.1.407"
 
 [build-system]

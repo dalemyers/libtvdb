@@ -5,8 +5,11 @@ import pytest
 
 from libtvdb.utilities import parse_date, parse_datetime
 from libtvdb.model.parsers import (
-    date_parser, datetime_parser, timestamp_parser,
-    optional_float, optional_empty_str
+    date_parser,
+    datetime_parser,
+    timestamp_parser,
+    optional_float,
+    optional_empty_str,
 )
 from libtvdb.model.show import translated_name_parser
 
