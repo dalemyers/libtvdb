@@ -1,28 +1,46 @@
 """Utility classes and methods for working with the TVDB API."""
 
 import datetime
+import logging
+from typing import Final
+
+logger = logging.getLogger(__name__)
+
+# Constants for date format validation
+EXPECTED_DATE_FORMAT: Final[str] = "YYYY-MM-DD"
+EXPECTED_DATETIME_FORMAT: Final[str] = "YYYY-MM-DD HH:MM:SS"
+INVALID_DATETIME_PLACEHOLDER: Final[str] = "0000-00-00 00:00:00"
+DATE_COMPONENTS_COUNT: Final[int] = 3
+DATETIME_FORMAT_STRING: Final[str] = "%Y-%m-%d %H:%M:%S"
 
 
 def parse_date(input_string: str) -> datetime.date:
-    """Parse a date string from the API in YYYY-MM-DD format into a date object."""
+    """Parse a date string from the API in YYYY-MM-DD format into a date object.
 
-    if input_string is None:
-        raise ValueError("The input string should not be none.")
+    Args:
+        input_string: Date string in YYYY-MM-DD format
 
-    if input_string == "":
-        raise ValueError("The input string should not be empty.")
+    Returns:
+        Parsed date object
+
+    Raises:
+        ValueError: If input is None, empty, or not in expected format
+    """
+
+    if not input_string:
+        raise ValueError("The input string should not be None or empty.")
 
     components = input_string.split("-")
 
-    if len(components) != 3:
-        raise ValueError("The input string should be of the format YYYY-MM-DD.")
+    if len(components) != DATE_COMPONENTS_COUNT:
+        raise ValueError(f"The input string should be of the format {EXPECTED_DATE_FORMAT}.")
 
     for component in components:
         try:
             _ = int(component)
         except ValueError as ex:
             raise ValueError(
-                "The input string should be of the format YYYY-MM-DD, "
+                f"The input string should be of the format {EXPECTED_DATE_FORMAT}, "
                 "where each date component is an integer."
             ) from ex
 
@@ -34,39 +52,46 @@ def parse_date(input_string: str) -> datetime.date:
 
 
 def parse_datetime(input_string: str) -> datetime.datetime:
-    """Parse a datetime string from the API in 'YYYY-MM-DD HH:MM:SS' format."""
+    """Parse a datetime string from the API in 'YYYY-MM-DD HH:MM:SS' format.
 
-    if input_string is None:
-        raise ValueError("The input string should not be none.")
+    Args:
+        input_string: Datetime string in 'YYYY-MM-DD HH:MM:SS' format
 
-    if input_string == "":
-        raise ValueError("The input string should not be empty.")
+    Returns:
+        Parsed datetime object
 
-    if input_string == "0000-00-00 00:00:00":
-        raise ValueError("Invalid date time")
+    Raises:
+        ValueError: If input is None, empty, or invalid placeholder
+    """
 
-    return datetime.datetime.strptime(input_string, "%Y-%m-%d %H:%M:%S")
+    if not input_string:
+        raise ValueError("The input string should not be None or empty.")
+
+    if input_string == INVALID_DATETIME_PLACEHOLDER:
+        raise ValueError(f"Invalid date time: {INVALID_DATETIME_PLACEHOLDER}")
+
+    return datetime.datetime.strptime(input_string, DATETIME_FORMAT_STRING)
 
 
 class Log:
-    """Fake log class that will be used until we implement logging."""
+    """Logging wrapper class for backward compatibility."""
 
     @staticmethod
-    def info(message):
+    def info(message: str) -> None:
         """Log an info level log message."""
-        print("INFO: " + message)
+        logger.info(message)
 
     @staticmethod
-    def debug(message):
+    def debug(message: str) -> None:
         """Log a debug level log message."""
-        print("DEBUG: " + message)
+        logger.debug(message)
 
     @staticmethod
-    def warning(message):
+    def warning(message: str) -> None:
         """Log a warning level log message."""
-        print("WARNING: " + message)
+        logger.warning(message)
 
     @staticmethod
-    def error(message):
+    def error(message: str) -> None:
         """Log an error level log message."""
-        print("ERROR: " + message)
+        logger.error(message)

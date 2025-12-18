@@ -1,42 +1,75 @@
 """All the types that are used in the API."""
 
 import datetime
+from typing import Final
 
 from libtvdb.utilities import parse_date, parse_datetime
 
+# Constants for invalid date/datetime placeholders
+INVALID_DATE_PLACEHOLDER: Final[str] = "0000-00-00"
+INVALID_DATETIME_PLACEHOLDER: Final[str] = "0000-00-00 00:00:00"
+
 
 def date_parser(value: str | None) -> datetime.date | None:
-    """Parser method for parsing dates to pass to deserialize."""
+    """Parse a date string from the API into a date object.
+
+    Args:
+        value: Date string in YYYY-MM-DD format or None
+
+    Returns:
+        Parsed date object or None if value is None/empty/invalid
+    """
     if value is None:
         return None
 
-    if value in ["", "0000-00-00"]:
+    if value in ["", INVALID_DATE_PLACEHOLDER]:
         return None
 
     return parse_date(value)
 
 
 def datetime_parser(value: str | None) -> datetime.datetime | None:
-    """Parser method for parsing datetimes to pass to deserialize."""
+    """Parse a datetime string from the API into a datetime object.
+
+    Args:
+        value: Datetime string in 'YYYY-MM-DD HH:MM:SS' format or None
+
+    Returns:
+        Parsed datetime object or None if value is None/empty/invalid
+    """
     if value is None:
         return None
 
-    if value in ["", "0000-00-00 00:00:00"]:
+    if value in ["", INVALID_DATETIME_PLACEHOLDER]:
         return None
 
     return parse_datetime(value)
 
 
 def timestamp_parser(value: int | None) -> datetime.datetime | None:
-    """Parser method for parsing datetimes to pass to deserialize."""
+    """Parse a Unix timestamp into a datetime object.
+
+    Args:
+        value: Unix timestamp (seconds since epoch) or None
+
+    Returns:
+        Parsed datetime object in UTC or None if value is None
+    """
     if value is None:
         return None
 
-    return datetime.datetime.fromtimestamp(value)
+    return datetime.datetime.fromtimestamp(value, tz=datetime.UTC)
 
 
 def optional_float(value: int | None) -> float | None:
-    """Parser for optional ints to floats."""
+    """Convert an optional integer to a float.
+
+    Args:
+        value: Integer value or None
+
+    Returns:
+        Float conversion of the value or None if value is None
+    """
     if value is None:
         return None
 
@@ -44,7 +77,14 @@ def optional_float(value: int | None) -> float | None:
 
 
 def optional_empty_str(value: str | None) -> str | None:
-    """Parser for empty strs to None."""
+    """Convert empty strings to None for optional string fields.
+
+    Args:
+        value: String value or None
+
+    Returns:
+        The string value or None if value is None or empty string
+    """
     if value is None:
         return None
 

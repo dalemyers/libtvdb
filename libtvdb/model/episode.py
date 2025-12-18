@@ -68,9 +68,11 @@ class Episode:
 
     @property
     def characters_by_role(self) -> dict[str, list[Character]]:
-        """Get all characters keyed by their role.
+        """Get all characters grouped by their role type.
 
-        :returns: A dict mapping roles to characters
+        Returns:
+            Dictionary mapping role types to lists of characters.
+            Characters with no role type are grouped under 'Unknown'.
         """
         output: dict[str, list[Character]] = defaultdict(list)
 
@@ -85,5 +87,17 @@ class Episode:
 
         return output
 
-    def __str__(self):
-        return f"Episode<{self.identifier} - {self.name}"
+    def __str__(self) -> str:
+        return f"Episode<{self.identifier} - {self.name}>"
+
+    def __repr__(self) -> str:
+        season_ep = f"S{self.season_number:02d}E{self.number:02d}"
+        return f"Episode<{self.identifier} - {season_ep} - {self.name}>"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Episode):
+            return NotImplemented
+        return self.identifier == other.identifier
+
+    def __hash__(self) -> int:
+        return hash(self.identifier)

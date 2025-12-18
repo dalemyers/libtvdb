@@ -38,5 +38,16 @@ class Artwork:
     tag_options: TagOption | None
     status: dict[str, Any]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Artwork<{self.identifier} - {self.image}>"
+
+    def __repr__(self) -> str:
+        return f"Artwork<{self.identifier} - {self.width}x{self.height} - type={self.artwork_type}>"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Artwork):
+            return NotImplemented
+        return self.identifier == other.identifier
+
+    def __hash__(self) -> int:
+        return hash(self.identifier)

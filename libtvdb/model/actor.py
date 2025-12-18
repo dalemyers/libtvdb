@@ -28,5 +28,16 @@ class Actor:
     image_added: datetime.datetime | None
     last_updated: datetime.datetime | None
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} ({self.role}, {self.identifier})"
+
+    def __repr__(self) -> str:
+        return f"Actor<{self.identifier} - {self.name} as {self.role}>"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Actor):
+            return NotImplemented
+        return self.identifier == other.identifier
+
+    def __hash__(self) -> int:
+        return hash(self.identifier)

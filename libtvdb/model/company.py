@@ -18,7 +18,10 @@ class CompanyType:
     company_type_id: int
     company_type_name: str
 
-    def __str__(self):
+    def __str__(self) -> str:
+        return f"CompanyType<{self.company_type_id} - {self.company_type_name}>"
+
+    def __repr__(self) -> str:
         return f"CompanyType<{self.company_type_id} - {self.company_type_name}>"
 
 
@@ -43,5 +46,16 @@ class Company:
     slug: str
     tag_options: Any | None
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Company<{self.identifier} - {self.name}>"
+
+    def __repr__(self) -> str:
+        return f"Company<{self.identifier} - {self.name} ({self.slug})>"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Company):
+            return NotImplemented
+        return self.identifier == other.identifier
+
+    def __hash__(self) -> int:
+        return hash(self.identifier)

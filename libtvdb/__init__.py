@@ -27,32 +27,53 @@ class TVDBClient:
 
         AUTH_TIMEOUT: ClassVar[float] = 3
         MAX_AUTH_RETRY_COUNT: ClassVar[int] = 3
+        DEFAULT_TIMEOUT: ClassVar[float] = 10.0
+        SUCCESS_STATUS_MIN: ClassVar[int] = 200
+        SUCCESS_STATUS_MAX: ClassVar[int] = 300
 
     _BASE_API: ClassVar[str] = "https://api4.thetvdb.com/v4"
 
     def __init__(self, *, api_key: str, pin: str) -> None:
         """Create a new client wrapper.
 
-        If any of the supplied parameters are None, they will be loaded from the
-        keychain if possible. If not possible, an exception will be thrown.
+        Args:
+            api_key: The TVDB API key for authentication
+            pin: The TVDB PIN for authentication
+
+        Raises:
+            TVDBException: If api_key or pin is None or empty
         """
 
-        if api_key is None:
-            raise Exception("No API key was supplied")
+        if not api_key:
+            raise TVDBException("No API key was supplied")
 
-        if pin is None:
-            raise Exception("No PIN was supplied")
+        if not pin:
+            raise TVDBException("No PIN was supplied")
 
         self.api_key = api_key
         self.pin = pin
         self.auth_token = None
 
     def _expand_url(self, path: str) -> str:
-        """Take the path from a URL and expand it to the full API path."""
+        """Take the path from a URL and expand it to the full API path.
+
+        Args:
+            path: API endpoint path (e.g., "login", "series/123")
+
+        Returns:
+            Full API URL with base path prepended
+        """
         return f"{TVDBClient._BASE_API}/{path}"
 
     def _construct_headers(self, *, additional_headers: Any | None = None) -> dict[str, str]:
-        """Construct the headers used for all requests."""
+        """Construct the headers used for all requests.
+
+        Args:
+            additional_headers: Optional dict of additional headers to include
+
+        Returns:
+            Dictionary of HTTP headers for the request
+        """
 
         headers = {"Accept": "application/json"}
 
@@ -67,12 +88,14 @@ class TVDBClient:
 
         return headers
 
-    def authenticate(self):
+    def authenticate(self) -> None:
         """Authenticate the client with the API.
 
-        This will exit early if we are already authenticated. It does not need
-        to be called. All calls requiring that the client is authenticated will
-        call this.
+        This will exit early if already authenticated. All API calls requiring
+        authentication will call this method automatically.
+
+        Raises:
+            TVDBAuthenticationException: If authentication fails or times out
         """
 
         if self.auth_token is not None:
@@ -104,9 +127,15 @@ class TVDBClient:
                     Log.warning("Authentication timed out, but will retry.")
                 else:
                     Log.error("Authentication timed out maximum number of times.")
-                    raise Exception("Authentication timed out maximum number of times.") from ex
+                    raise TVDBAuthenticationException(
+                        "Authentication timed out maximum number of times."
+                    ) from ex
 
-        if response.status_code < 200 or response.status_code >= 300:
+        if not (
+            TVDBClient.Constants.SUCCESS_STATUS_MIN
+            <= response.status_code
+            < TVDBClient.Constants.SUCCESS_STATUS_MAX
+        ):
             Log.error(f"Authentication failed with status code: {response.status_code}")
             raise TVDBAuthenticationException(
                 f"Authentication failed with status code: {response.status_code}"
@@ -124,13 +153,23 @@ class TVDBClient:
         Log.info("Authenticated successfully")
 
     def get(self, url_path: str, *, timeout: float) -> Any:
-        """Search for shows matching the name supplied.
+        """Execute a GET request to the TVDB API.
 
-        If no matching show is found, a NotFoundException will be thrown.
+        Args:
+            url_path: The API endpoint path
+            timeout: Request timeout in seconds
+
+        Returns:
+            The data from the API response
+
+        Raises:
+            ValueError: If url_path is invalid
+            NotFoundException: If the resource is not found
+            TVDBException: For other API errors
         """
 
-        if url_path is None or url_path == "":
-            raise AttributeError("An invalid URL path was supplied")
+        if not url_path:
+            raise ValueError("An invalid URL path was supplied")
 
         self.authenticate()
 
@@ -154,10 +193,24 @@ class TVDBClient:
         return data
 
     def get_paged(self, url_path: str, *, timeout: float, key: str | None = None) -> list[Any]:
-        """Get paged data."""
+        """Execute a GET request for paginated data.
 
-        if url_path is None or url_path == "":
-            raise AttributeError("An invalid URL path was supplied")
+        Args:
+            url_path: The API endpoint path
+            timeout: Request timeout in seconds
+            key: Optional key to extract from each page's data
+
+        Returns:
+            Combined list of all paginated results
+
+        Raises:
+            ValueError: If url_path is invalid
+            NotFoundException: If the resource is not found
+            TVDBException: For other API errors
+        """
+
+        if not url_path:
+            raise ValueError("An invalid URL path was supplied")
 
         self.authenticate()
 
@@ -202,10 +255,22 @@ class TVDBClient:
 
         return all_results
 
-    def search_show(self, show_name: str, *, timeout: float = 10.0) -> list[Show]:
-        """Search for shows matching the name supplied."""
+    def search_show(
+        self, show_name: str, *, timeout: float | None = None
+    ) -> list[Show]:
+        """Search for shows matching the name supplied.
 
-        if show_name is None or show_name == "":
+        Args:
+            show_name: The name of the show to search for
+            timeout: Request timeout in seconds (default: 10.0)
+
+        Returns:
+            List of matching shows, empty list if no matches or invalid input
+        """
+        if timeout is None:
+            timeout = TVDBClient.Constants.DEFAULT_TIMEOUT
+
+        if not show_name:
             return []
 
         encoded_name = urllib.parse.quote(show_name)
@@ -222,8 +287,22 @@ class TVDBClient:
 
         return shows
 
-    def show_info(self, show_identifier: int, *, timeout: float = 10.0) -> Show | None:
-        """Get the full information for the show with the given identifier."""
+    def show_info(self, show_identifier: int, *, timeout: float | None = None) -> Show | None:
+        """Get the full information for the show with the given identifier.
+
+        Args:
+            show_identifier: The TVDB ID of the show
+            timeout: Request timeout in seconds (default: 10.0)
+
+        Returns:
+            Show object with detailed information
+
+        Raises:
+            NotFoundException: If the show is not found
+            TVDBException: For other API errors
+        """
+        if timeout is None:
+            timeout = TVDBClient.Constants.DEFAULT_TIMEOUT
 
         Log.info(f"Fetching data for show: {show_identifier}")
 
@@ -232,9 +311,23 @@ class TVDBClient:
         return deserialize.deserialize(Show, show_data, throw_on_unhandled=True)
 
     def episodes_from_show_id(
-        self, show_identifier: int | str, timeout: float = 10.0
+        self, show_identifier: int | str, timeout: float | None = None
     ) -> list[Episode]:
-        """Get the episodes in the given show."""
+        """Get the episodes in the given show.
+
+        Args:
+            show_identifier: The TVDB ID of the show
+            timeout: Request timeout in seconds (default: 10.0)
+
+        Returns:
+            List of episodes for the show
+
+        Raises:
+            NotFoundException: If the show is not found
+            TVDBException: For other API errors
+        """
+        if timeout is None:
+            timeout = TVDBClient.Constants.DEFAULT_TIMEOUT
 
         Log.info(f"Fetching episodes for show id: {show_identifier}")
 
@@ -253,14 +346,41 @@ class TVDBClient:
 
         return episodes
 
-    def episodes_from_show(self, show: Show, timeout: float = 10.0) -> list[Episode]:
-        """Get the episodes in the given show."""
+    def episodes_from_show(self, show: Show, timeout: float | None = None) -> list[Episode]:
+        """Get the episodes in the given show.
+
+        Args:
+            show: The Show object
+            timeout: Request timeout in seconds (default: 10.0)
+
+        Returns:
+            List of episodes for the show
+
+        Raises:
+            ValueError: If the show does not have a tvdb_id
+            NotFoundException: If the show is not found
+            TVDBException: For other API errors
+        """
         if show.tvdb_id is None:
             raise ValueError("Show must have a tvdb_id")
         return self.episodes_from_show_id(show.tvdb_id, timeout=timeout)
 
-    def episode_by_id(self, episode_identifier: int, timeout: float = 10.0) -> Episode:
-        """Get the episode information from its ID."""
+    def episode_by_id(self, episode_identifier: int, timeout: float | None = None) -> Episode:
+        """Get the episode information from its ID.
+
+        Args:
+            episode_identifier: The TVDB ID of the episode
+            timeout: Request timeout in seconds (default: 10.0)
+
+        Returns:
+            Episode object with detailed information
+
+        Raises:
+            NotFoundException: If the episode is not found
+            TVDBException: For other API errors
+        """
+        if timeout is None:
+            timeout = TVDBClient.Constants.DEFAULT_TIMEOUT
 
         Log.info(f"Fetching info for episode id: {episode_identifier}")
 
@@ -269,10 +389,22 @@ class TVDBClient:
         return deserialize.deserialize(Episode, episode_data, throw_on_unhandled=True)
 
     @staticmethod
-    def _check_errors(response: requests.Response) -> Any:
-        """Check an API response for errors."""
+    def _check_errors(response: requests.Response) -> None:
+        """Check an API response for errors.
 
-        if response.status_code >= 200 and response.status_code < 300:
+        Args:
+            response: The requests Response object
+
+        Raises:
+            NotFoundException: If the resource is not found
+            TVDBException: For other API errors
+        """
+
+        if (
+            TVDBClient.Constants.SUCCESS_STATUS_MIN
+            <= response.status_code
+            < TVDBClient.Constants.SUCCESS_STATUS_MAX
+        ):
             return
 
         Log.error(f"Bad response code from API: {response.status_code}")

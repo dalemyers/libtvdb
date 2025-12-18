@@ -12,13 +12,13 @@ from libtvdb.utilities import Log
 
 def test_client_missing_api_key():
     """Test that client raises exception when API key is missing."""
-    with pytest.raises(Exception, match="No API key"):
+    with pytest.raises(TVDBException, match="No API key"):
         TVDBClient(api_key=None, pin="test_pin")
 
 
 def test_client_missing_pin():
     """Test that client raises exception when PIN is missing."""
-    with pytest.raises(Exception, match="No PIN"):
+    with pytest.raises(TVDBException, match="No PIN"):
         TVDBClient(api_key="test_key", pin=None)
 
 
@@ -57,7 +57,7 @@ def test_authentication_timeout_max_retries(mock_post):
     client = TVDBClient(api_key="test_key", pin="test_pin")
     mock_post.side_effect = requests.exceptions.Timeout("Timeout")
 
-    with pytest.raises(Exception, match="timed out maximum number of times"):
+    with pytest.raises(TVDBAuthenticationException, match="timed out maximum number of times"):
         client.authenticate()
 
 
@@ -187,17 +187,16 @@ def test_check_errors_no_error_field():
 
 def test_log_methods():
     """Test all log methods."""
-    with patch("builtins.print") as mock_print:
+    with patch("libtvdb.utilities.logger") as mock_logger:
         Log.info("info message")
         Log.debug("debug message")
         Log.warning("warning message")
         Log.error("error message")
 
-        assert mock_print.call_count == 4
-        mock_print.assert_any_call("INFO: info message")
-        mock_print.assert_any_call("DEBUG: debug message")
-        mock_print.assert_any_call("WARNING: warning message")
-        mock_print.assert_any_call("ERROR: error message")
+        mock_logger.info.assert_called_once_with("info message")
+        mock_logger.debug.assert_called_once_with("debug message")
+        mock_logger.warning.assert_called_once_with("warning message")
+        mock_logger.error.assert_called_once_with("error message")
 
 
 def test_get_invalid_url_path_none():

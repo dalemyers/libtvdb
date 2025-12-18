@@ -49,6 +49,20 @@ class Genre:
     name: str
     slug: str
 
+    def __str__(self) -> str:
+        return f"Genre<{self.identifier} - {self.name}>"
+
+    def __repr__(self) -> str:
+        return f"Genre<{self.identifier} - {self.name} ({self.slug})>"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Genre):
+            return NotImplemented
+        return self.identifier == other.identifier
+
+    def __hash__(self) -> int:
+        return hash(self.identifier)
+
 
 @deserialize.key("identifier", "id")
 @deserialize.key("show_type", "type")
@@ -118,3 +132,17 @@ class Show:
     translations: dict[str, str] | None
     tvdb_id: str | None
     year: str | None
+
+    def __str__(self) -> str:
+        return f"Show<{self.identifier} - {self.name}>"
+
+    def __repr__(self) -> str:
+        return f"Show<{self.identifier} - {self.name} ({self.year}) - {self.status}>"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Show):
+            return NotImplemented
+        return self.identifier == other.identifier
+
+    def __hash__(self) -> int:
+        return hash(self.identifier)

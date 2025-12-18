@@ -17,7 +17,7 @@ from libtvdb.utilities import parse_date, parse_datetime
 
 def test_parse_datetime_none():
     """Test parse_datetime with None input."""
-    with pytest.raises(ValueError, match="should not be none"):
+    with pytest.raises(ValueError, match="should not be None"):
         parse_datetime(None)
 
 

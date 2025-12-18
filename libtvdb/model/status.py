@@ -24,5 +24,8 @@ class Status:
     record_type: str
     keep_updated: bool
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Status<{self.identifier} - {self.name}>"
+
+    def __repr__(self) -> str:
+        return f"Status<{self.identifier} - {self.name.value} (keep_updated={self.keep_updated})>"

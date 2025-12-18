@@ -39,5 +39,16 @@ class Character:
     person_img_url: str | None
     tag_options: Any | None
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Character<{self.identifier} - {self.name}>"
+
+    def __repr__(self) -> str:
+        return f"Character<{self.identifier} - {self.name} (people_id={self.people_id})>"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Character):
+            return NotImplemented
+        return self.identifier == other.identifier
+
+    def __hash__(self) -> int:
+        return hash(self.identifier)

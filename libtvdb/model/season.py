@@ -38,5 +38,16 @@ class SeasonBase:
     slug: str | None
     season_type: SeasonType
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"SeasonBase<{self.identifier} - {self.name}>"
+
+    def __repr__(self) -> str:
+        return f"SeasonBase<{self.identifier} - S{self.number:02d} - {self.name}>"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, SeasonBase):
+            return NotImplemented
+        return self.identifier == other.identifier
+
+    def __hash__(self) -> int:
+        return hash(self.identifier)
