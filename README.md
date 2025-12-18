@@ -39,7 +39,7 @@ poetry run pytest
 
 # Run linters and type checkers
 poetry run ruff check libtvdb
-poetry run black libtvdb tests
+poetry run black --check libtvdb tests
 poetry run pylint libtvdb
 poetry run mypy libtvdb
 poetry run pyright libtvdb
