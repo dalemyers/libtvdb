@@ -1,5 +1,6 @@
 """Tests for client error handling and edge cases."""
 
+import json
 from unittest.mock import Mock, patch
 
 import pytest
@@ -7,6 +8,7 @@ import requests
 
 from libtvdb import TVDBClient
 from libtvdb.exceptions import NotFoundException, TVDBAuthenticationException, TVDBException
+from libtvdb.model import Show
 from libtvdb.utilities import Log
 
 
@@ -27,7 +29,9 @@ def test_construct_headers_with_additional():
     client = TVDBClient(api_key="test_key", pin="test_pin")
     client.auth_token = "test_token"
 
+    # pylint: disable=protected-access
     headers = client._construct_headers(additional_headers={"X-Custom": "value"})
+    # pylint: enable=protected-access
 
     assert headers["Accept"] == "application/json"
     assert headers["Authorization"] == "Bearer test_token"
@@ -147,7 +151,7 @@ def test_check_errors_bad_status_code():
     mock_response.text = "Server error"
 
     with pytest.raises(TVDBException, match="Unknown error"):
-        TVDBClient._check_errors(mock_response)
+        TVDBClient._check_errors(mock_response)  # pylint: disable=protected-access
 
 
 def test_check_errors_not_found():
@@ -158,20 +162,18 @@ def test_check_errors_not_found():
     mock_response.url = "https://api.thetvdb.com/test"
 
     with pytest.raises(NotFoundException, match="Could not find resource"):
-        TVDBClient._check_errors(mock_response)
+        TVDBClient._check_errors(mock_response)  # pylint: disable=protected-access
 
 
 def test_check_errors_json_decode_error():
     """Test _check_errors when JSON decoding fails."""
-    import json
-
     mock_response = Mock()
     mock_response.status_code = 500
     mock_response.json.side_effect = json.JSONDecodeError("error", "doc", 0)
     mock_response.text = "Invalid JSON"
 
     with pytest.raises(TVDBException, match="Could not decode error response"):
-        TVDBClient._check_errors(mock_response)
+        TVDBClient._check_errors(mock_response)  # pylint: disable=protected-access
 
 
 def test_check_errors_no_error_field():
@@ -182,7 +184,7 @@ def test_check_errors_no_error_field():
     mock_response.text = "No error field"
 
     with pytest.raises(TVDBException, match="Could not get error information"):
-        TVDBClient._check_errors(mock_response)
+        TVDBClient._check_errors(mock_response)  # pylint: disable=protected-access
 
 
 def test_log_methods():
@@ -251,8 +253,6 @@ def test_get_paged_no_data(mock_get):
 
 def test_episodes_from_show_no_tvdb_id():
     """Test episodes_from_show with None tvdb_id."""
-    from libtvdb.model import Show
-
     client = TVDBClient(api_key="test_key", pin="test_pin")
     client.auth_token = "test_token"
     show = Show()

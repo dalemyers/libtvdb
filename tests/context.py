@@ -9,9 +9,8 @@ import dotenv
 
 try:
     import keyper
-except:
-    import dotenv
-
+except (ImportError, Exception):  # pylint: disable=broad-exception-caught
+    keyper = None
     dotenv.load_dotenv()
 
 
@@ -47,18 +46,18 @@ class BaseTVDBTest(unittest.TestCase):
         if secret := os.environ.get(secret_name):
             return secret
 
-        keychain_value = keyper.get_password(label=secret_name.lower())
-
-        if keychain_value is not None:
-            return keychain_value
+        if keyper is not None:
+            try:
+                keychain_value = keyper.get_password(label=secret_name.lower())
+                if keychain_value is not None:
+                    return keychain_value
+            except Exception:  # pylint: disable=broad-exception-caught
+                pass
 
         return os.environ.get(secret_name.upper())
 
-    # pylint: disable=no-self-use
     def client(self) -> libtvdb.TVDBClient:
         """A class reference to the client to clean up the tests."""
         if BaseTVDBTest._client is None:
             raise Exception("Client was not set")
         return BaseTVDBTest._client
-
-    # pylint: enable=no-self-use
