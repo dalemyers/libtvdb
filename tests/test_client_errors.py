@@ -20,8 +20,9 @@ def test_client_missing_api_key():
 
 def test_client_missing_pin():
     """Test that client raises exception when PIN is missing."""
-    with pytest.raises(TVDBException, match="No PIN"):
-        TVDBClient(api_key="test_key", pin=None)
+    # PIN is optional, so this should not raise an exception
+    client = TVDBClient(api_key="test_key", pin=None)
+    assert client.pin is None
 
 
 def test_construct_headers_with_additional():
@@ -206,7 +207,7 @@ def test_get_invalid_url_path_none():
     client = TVDBClient(api_key="test_key", pin="test_pin")
     client.auth_token = "test_token"
 
-    with pytest.raises(AttributeError, match="invalid URL path"):
+    with pytest.raises(ValueError, match="invalid URL path"):
         client.get(None, timeout=10)
 
 
@@ -215,7 +216,7 @@ def test_get_invalid_url_path_empty():
     client = TVDBClient(api_key="test_key", pin="test_pin")
     client.auth_token = "test_token"
 
-    with pytest.raises(AttributeError, match="invalid URL path"):
+    with pytest.raises(ValueError, match="invalid URL path"):
         client.get("", timeout=10)
 
 
@@ -224,7 +225,7 @@ def test_get_paged_invalid_url_path_none():
     client = TVDBClient(api_key="test_key", pin="test_pin")
     client.auth_token = "test_token"
 
-    with pytest.raises(AttributeError, match="invalid URL path"):
+    with pytest.raises(ValueError, match="invalid URL path"):
         client.get_paged(None, timeout=10)
 
 
@@ -233,7 +234,7 @@ def test_get_paged_invalid_url_path_empty():
     client = TVDBClient(api_key="test_key", pin="test_pin")
     client.auth_token = "test_token"
 
-    with pytest.raises(AttributeError, match="invalid URL path"):
+    with pytest.raises(ValueError, match="invalid URL path"):
         client.get_paged("", timeout=10)
 
 

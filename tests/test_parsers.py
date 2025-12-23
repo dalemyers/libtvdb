@@ -23,7 +23,7 @@ def test_parse_datetime_none():
 
 def test_parse_datetime_empty():
     """Test parse_datetime with empty string."""
-    with pytest.raises(ValueError, match="should not be empty"):
+    with pytest.raises(ValueError, match="should not be None or empty"):
         parse_datetime("")
 
 
