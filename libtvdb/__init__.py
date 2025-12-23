@@ -7,11 +7,7 @@ from typing import Any, ClassVar
 import deserialize
 import requests
 
-from libtvdb.exceptions import (
-    NotFoundException,
-    TVDBAuthenticationException,
-    TVDBException,
-)
+from libtvdb.exceptions import NotFoundException, TVDBAuthenticationException, TVDBException
 from libtvdb.model import Episode, Show
 from libtvdb.utilities import Log
 
@@ -32,8 +28,11 @@ class TVDBClient:
         SUCCESS_STATUS_MAX: ClassVar[int] = 300
 
     _BASE_API: ClassVar[str] = "https://api4.thetvdb.com/v4"
+    api_key: str
+    pin: str | None
+    auth_token: str | None
 
-    def __init__(self, *, api_key: str, pin: str) -> None:
+    def __init__(self, *, api_key: str, pin: str | None = None) -> None:
         """Create a new client wrapper.
 
         Args:
@@ -46,9 +45,6 @@ class TVDBClient:
 
         if not api_key:
             raise TVDBException("No API key was supplied")
-
-        if not pin:
-            raise TVDBException("No PIN was supplied")
 
         self.api_key = api_key
         self.pin = pin
@@ -106,8 +102,10 @@ class TVDBClient:
 
         login_body = {
             "apikey": self.api_key,
-            "pin": self.pin,
         }
+
+        if self.pin is not None:
+            login_body["pin"] = self.pin
 
         for i in range(TVDBClient.Constants.MAX_AUTH_RETRY_COUNT):
             try:
@@ -255,9 +253,7 @@ class TVDBClient:
 
         return all_results
 
-    def search_show(
-        self, show_name: str, *, timeout: float | None = None
-    ) -> list[Show]:
+    def search_show(self, show_name: str, *, timeout: float | None = None) -> list[Show]:
         """Search for shows matching the name supplied.
 
         Args:
