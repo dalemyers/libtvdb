@@ -2,10 +2,9 @@
 
 import os
 import sys
-import unittest
-from typing import ClassVar
 
 import dotenv
+import pytest
 
 try:
     import keyper
@@ -21,43 +20,32 @@ import libtvdb
 # pylint: enable=wrong-import-position
 
 
-class BaseTVDBTest(unittest.TestCase):
-    """Base class for TVDB test cases."""
+def _read_secret(secret_name: str) -> str | None:
+    """Read a secret from environment or keychain."""
+    if secret := os.environ.get(secret_name):
+        return secret
 
-    _client: ClassVar[libtvdb.TVDBClient | None] = None
+    if keyper is not None:
+        try:
+            keychain_value = keyper.get_password(label=secret_name.lower())
+            if keychain_value is not None:
+                return str(keychain_value)
+        except Exception:  # pylint: disable=broad-exception-caught
+            pass
 
-    @classmethod
-    def setUpClass(cls):
-        """Setup the test class."""
+    return os.environ.get(secret_name.upper())
 
-        api_key = BaseTVDBTest._read_secret("libtvdb_api_key")
-        pin = BaseTVDBTest._read_secret("libtvdb_pin")
 
-        if api_key is None:
-            raise Exception("Failed to get API Key")
+@pytest.fixture(scope="session")
+def tvdb_client() -> libtvdb.TVDBClient:
+    """Fixture that provides a TVDB client for tests."""
+    api_key = _read_secret("libtvdb_api_key")
+    pin = _read_secret("libtvdb_pin")
 
-        if pin is None:
-            raise Exception("Failed to get PIN")
+    if api_key is None:
+        raise Exception("Failed to get API Key")
 
-        BaseTVDBTest._client = libtvdb.TVDBClient(api_key=api_key, pin=pin)
+    if pin is None:
+        raise Exception("Failed to get PIN")
 
-    @classmethod
-    def _read_secret(cls, secret_name):
-        if secret := os.environ.get(secret_name):
-            return secret
-
-        if keyper is not None:
-            try:
-                keychain_value = keyper.get_password(label=secret_name.lower())
-                if keychain_value is not None:
-                    return keychain_value
-            except Exception:  # pylint: disable=broad-exception-caught
-                pass
-
-        return os.environ.get(secret_name.upper())
-
-    def client(self) -> libtvdb.TVDBClient:
-        """A class reference to the client to clean up the tests."""
-        if BaseTVDBTest._client is None:
-            raise Exception("Client was not set")
-        return BaseTVDBTest._client
+    return libtvdb.TVDBClient(api_key=api_key, pin=pin)
