@@ -47,6 +47,7 @@ class Episode:
     image_type: int | None
     is_movie: int  # ?
     last_updated: datetime.datetime
+    linked_movie: int | None
     name: str
     name_translations: list[str] | None
     networks: list[NetworkBase] | None

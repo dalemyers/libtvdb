@@ -323,17 +323,17 @@ def test_show_aliases_deserialization(tvdb_client):
             assert isinstance(alias, (str, dict)), "Alias should be either string or dict"
 
 
-def test_the_orville_deserialization(tvdb_client):
-    """Test that The Orville show and episodes deserialize correctly.
+def test_ahsoka_deserialization(tvdb_client):
+    """Test that Ahsoka show and episodes deserialize correctly.
 
-    This is a specific test for show ID 328487 to ensure all fields
-    deserialize properly for this particular show.
+    This is a specific test for show ID 393187 to ensure all fields
+    deserialize properly for this particular show, including the linkedMovie field.
     """
-    show = tvdb_client.show_info(328487)  # The Orville
+    show = tvdb_client.show_info(393187)  # Ahsoka
 
-    assert show is not None, "The Orville show should not be None"
-    assert show.identifier == "328487", "Show ID should match"
-    assert show.name == "The Orville", "Show name should be 'The Orville'"
+    assert show is not None, "Ahsoka show should not be None"
+    assert show.identifier == "393187", "Show ID should match"
+    assert show.name == "Ahsoka", "Show name should be 'Ahsoka'"
     assert show.slug is not None, "Show should have a slug"
 
     if show.status:
@@ -341,21 +341,24 @@ def test_the_orville_deserialization(tvdb_client):
             show.status, StatusName
         ), "Status should have proper type"
 
-    episodes = tvdb_client.episodes_from_show_id(328487)
-    assert len(episodes) > 0, "The Orville should have episodes"
+    episodes = tvdb_client.episodes_from_show_id(393187)
+    assert len(episodes) > 0, "Ahsoka should have episodes"
 
     for episode in episodes:
         assert episode.identifier is not None, "Episode should have an identifier"
         assert episode.name is not None, "Episode should have a name"
         assert isinstance(episode.number, int), "Episode number should be an int"
         assert isinstance(episode.season_number, int), "Episode season_number should be an int"
-        assert episode.series_id == 328487, "Episode series_id should match show ID"
+        assert episode.series_id == 393187, "Episode series_id should match show ID"
         assert isinstance(
             episode.last_updated, datetime.datetime
         ), "last_updated should be a datetime"
 
         if episode.aired:
             assert isinstance(episode.aired, datetime.date), "aired should be a date"
+
+        if episode.linked_movie is not None:
+            assert isinstance(episode.linked_movie, int), "linked_movie should be an int"
 
         if episode.characters:
             for character in episode.characters:
