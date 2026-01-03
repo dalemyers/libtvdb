@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "libtvdb"
-version = "0.13.0"
+version = "0.14.0"
 description = "A wrapper around the TVDB API."
 
 license = "MIT"
