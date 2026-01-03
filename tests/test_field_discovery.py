@@ -3,6 +3,7 @@
 This test suite attempts to deserialize data from various shows to discover
 any fields that exist in the API but are missing from our models.
 """
+
 # pylint: disable=duplicate-code
 
 import pytest

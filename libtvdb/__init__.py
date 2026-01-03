@@ -2,6 +2,7 @@
 
 import json
 import urllib.parse
+from abc import ABC, abstractmethod
 from typing import Any, ClassVar
 
 import deserialize
@@ -12,14 +13,11 @@ from libtvdb.model import Episode, Show
 from libtvdb.utilities import Log
 
 
-class TVDBClient:
-    """The main client wrapper around the TVDB API.
-
-    Instantiate a new one of these to use a new authentication session.
-    """
+class _TVDBClientBase(ABC):
+    """Base class with shared logic for both sync and async clients."""
 
     class Constants:
-        """Constants that are used elsewhere in the TVDBClient class."""
+        """Constants that are used elsewhere in the TVDB client classes."""
 
         AUTH_TIMEOUT: ClassVar[float] = 3
         MAX_AUTH_RETRY_COUNT: ClassVar[int] = 3
@@ -59,7 +57,7 @@ class TVDBClient:
         Returns:
             Full API URL with base path prepended
         """
-        return f"{TVDBClient._BASE_API}/{path}"
+        return f"{_TVDBClientBase._BASE_API}/{path}"
 
     def _construct_headers(self, *, additional_headers: Any | None = None) -> dict[str, str]:
         """Construct the headers used for all requests.
@@ -84,6 +82,132 @@ class TVDBClient:
 
         return headers
 
+    @staticmethod
+    def _check_errors(response: requests.Response) -> None:
+        """Check an API response for errors.
+
+        Args:
+            response: The requests Response object
+
+        Raises:
+            NotFoundException: If the resource is not found
+            TVDBException: For other API errors
+        """
+
+        if (
+            _TVDBClientBase.Constants.SUCCESS_STATUS_MIN
+            <= response.status_code
+            < _TVDBClientBase.Constants.SUCCESS_STATUS_MAX
+        ):
+            return
+
+        Log.error(f"Bad response code from API: {response.status_code}")
+
+        # Try and read the JSON. If we don't have it, we return the generic
+        # exception type
+        try:
+            data = response.json()
+        except json.JSONDecodeError as ex:
+            raise TVDBException(f"Could not decode error response: {response.text}") from ex
+
+        # Try and get the error message so we can use it
+        error = data.get("Error")
+
+        # If we don't have it, just return the generic exception type
+        if error is None:
+            raise TVDBException(f"Could not get error information: {response.text}")
+
+        if error == "Resource not found":
+            raise NotFoundException(f"Could not find resource: {response.url}")
+
+        raise TVDBException(f"Unknown error: {response.text}")
+
+    @abstractmethod
+    def search_show(self, show_name: str, *, timeout: float | None = None) -> Any:
+        """Search for shows matching the name supplied.
+
+        Args:
+            show_name: The name of the show to search for
+            timeout: Request timeout in seconds (default: 10.0)
+
+        Returns:
+            List of matching shows, empty list if no matches or invalid input
+        """
+
+    @abstractmethod
+    def show_info(self, show_identifier: int, *, timeout: float | None = None) -> Any:
+        """Get the full information for the show with the given identifier.
+
+        Args:
+            show_identifier: The TVDB ID of the show
+            timeout: Request timeout in seconds (default: 10.0)
+
+        Returns:
+            Show object with detailed information
+
+        Raises:
+            NotFoundException: If the show is not found
+            TVDBException: For other API errors
+        """
+
+    @abstractmethod
+    def episodes_from_show_id(
+        self, show_identifier: int | str, timeout: float | None = None
+    ) -> Any:
+        """Get the episodes in the given show.
+
+        Args:
+            show_identifier: The TVDB ID of the show
+            timeout: Request timeout in seconds (default: 10.0)
+
+        Returns:
+            List of episodes for the show
+
+        Raises:
+            NotFoundException: If the show is not found
+            TVDBException: For other API errors
+        """
+
+    @abstractmethod
+    def episodes_from_show(self, show: Show, timeout: float | None = None) -> Any:
+        """Get the episodes in the given show.
+
+        Args:
+            show: The Show object
+            timeout: Request timeout in seconds (default: 10.0)
+
+        Returns:
+            List of episodes for the show
+
+        Raises:
+            ValueError: If the show does not have a tvdb_id
+            NotFoundException: If the show is not found
+            TVDBException: For other API errors
+        """
+
+    @abstractmethod
+    def episode_by_id(self, episode_identifier: int, timeout: float | None = None) -> Any:
+        """Get the episode information from its ID.
+
+        Args:
+            episode_identifier: The TVDB ID of the episode
+            timeout: Request timeout in seconds (default: 10.0)
+
+        Returns:
+            Episode object with detailed information
+
+        Raises:
+            NotFoundException: If the episode is not found
+            TVDBException: For other API errors
+        """
+
+
+class TVDBClient(_TVDBClientBase):
+    """The main client wrapper around the TVDB API.
+
+    Instantiate a new one of these to use a new authentication session.
+    """
+
     def authenticate(self) -> None:
         """Authenticate the client with the API.
 
@@ -107,20 +231,20 @@ class TVDBClient:
         if self.pin is not None:
             login_body["pin"] = self.pin
 
-        for i in range(TVDBClient.Constants.MAX_AUTH_RETRY_COUNT):
+        for i in range(_TVDBClientBase.Constants.MAX_AUTH_RETRY_COUNT):
             try:
                 response = requests.post(
                     self._expand_url("login"),
                     json=login_body,
                     headers=self._construct_headers(),
-                    timeout=TVDBClient.Constants.AUTH_TIMEOUT,
+                    timeout=_TVDBClientBase.Constants.AUTH_TIMEOUT,
                 )
 
                 # Since we authenticated successfully, we can break out of the
                 # retry loop
                 break
             except requests.exceptions.Timeout as ex:
-                will_retry = i < (TVDBClient.Constants.MAX_AUTH_RETRY_COUNT - 1)
+                will_retry = i < (_TVDBClientBase.Constants.MAX_AUTH_RETRY_COUNT - 1)
                 if will_retry:
                     Log.warning("Authentication timed out, but will retry.")
                 else:
@@ -130,9 +254,9 @@ class TVDBClient:
                     ) from ex
 
         if not (
-            TVDBClient.Constants.SUCCESS_STATUS_MIN
+            _TVDBClientBase.Constants.SUCCESS_STATUS_MIN
             <= response.status_code
-            < TVDBClient.Constants.SUCCESS_STATUS_MAX
+            < _TVDBClientBase.Constants.SUCCESS_STATUS_MAX
         ):
             Log.error(f"Authentication failed with status code: {response.status_code}")
             raise TVDBAuthenticationException(
@@ -264,7 +388,7 @@ class TVDBClient:
             List of matching shows, empty list if no matches or invalid input
         """
         if timeout is None:
-            timeout = TVDBClient.Constants.DEFAULT_TIMEOUT
+            timeout = _TVDBClientBase.Constants.DEFAULT_TIMEOUT
 
         if not show_name:
             return []
@@ -298,7 +422,7 @@ class TVDBClient:
             TVDBException: For other API errors
         """
         if timeout is None:
-            timeout = TVDBClient.Constants.DEFAULT_TIMEOUT
+            timeout = _TVDBClientBase.Constants.DEFAULT_TIMEOUT
 
         Log.info(f"Fetching data for show: {show_identifier}")
 
@@ -323,7 +447,7 @@ class TVDBClient:
             TVDBException: For other API errors
         """
         if timeout is None:
-            timeout = TVDBClient.Constants.DEFAULT_TIMEOUT
+            timeout = _TVDBClientBase.Constants.DEFAULT_TIMEOUT
 
         Log.info(f"Fetching episodes for show id: {show_identifier}")
 
@@ -376,50 +500,10 @@ class TVDBClient:
             TVDBException: For other API errors
         """
         if timeout is None:
-            timeout = TVDBClient.Constants.DEFAULT_TIMEOUT
+            timeout = _TVDBClientBase.Constants.DEFAULT_TIMEOUT
 
         Log.info(f"Fetching info for episode id: {episode_identifier}")
 
         episode_data = self.get(f"episodes/{episode_identifier}/extended", timeout=timeout)
 
         return deserialize.deserialize(Episode, episode_data, throw_on_unhandled=True)
-
-    @staticmethod
-    def _check_errors(response: requests.Response) -> None:
-        """Check an API response for errors.
-
-        Args:
-            response: The requests Response object
-
-        Raises:
-            NotFoundException: If the resource is not found
-            TVDBException: For other API errors
-        """
-
-        if (
-            TVDBClient.Constants.SUCCESS_STATUS_MIN
-            <= response.status_code
-            < TVDBClient.Constants.SUCCESS_STATUS_MAX
-        ):
-            return
-
-        Log.error(f"Bad response code from API: {response.status_code}")
-
-        # Try and read the JSON. If we don't have it, we return the generic
-        # exception type
-        try:
-            data = response.json()
-        except json.JSONDecodeError as ex:
-            raise TVDBException(f"Could not decode error response: {response.text}") from ex
-
-        # Try and get the error message so we can use it
-        error = data.get("Error")
-
-        # If we don't have it, just return the generic exception type
-        if error is None:
-            raise TVDBException(f"Could not get error information: {response.text}")
-
-        if error == "Resource not found":
-            raise NotFoundException(f"Could not find resource: {response.url}")
-
-        raise TVDBException(f"Unknown error: {response.text}")
