@@ -5,6 +5,7 @@ import sys
 
 import dotenv
 import pytest
+import pytest_asyncio
 
 try:
     import keyper
@@ -49,3 +50,18 @@ def tvdb_client() -> libtvdb.TVDBClient:
         raise Exception("Failed to get PIN")
 
     return libtvdb.TVDBClient(api_key=api_key, pin=pin)
+
+
+@pytest_asyncio.fixture(scope="session")
+async def async_tvdb_client() -> libtvdb.AsyncTVDBClient:
+    """Fixture that provides an async TVDB client for tests."""
+    api_key = _read_secret("libtvdb_api_key")
+    pin = _read_secret("libtvdb_pin")
+
+    if api_key is None:
+        raise Exception("Failed to get API Key")
+
+    if pin is None:
+        raise Exception("Failed to get PIN")
+
+    return libtvdb.AsyncTVDBClient(api_key=api_key, pin=pin)
